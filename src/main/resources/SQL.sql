@@ -1,5 +1,4 @@
 
-
 CREATE DATABASE IF NOT EXISTS `healthnow`
 /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */
 /*!80016 DEFAULT ENCRYPTION='N' */;
@@ -122,6 +121,7 @@ WHERE NOT EXISTS (
 
 );
 
+
 CREATE TABLE IF NOT EXISTS `especialidad` (
 
     `id_especialidad` INT NOT NULL AUTO_INCREMENT,
@@ -143,6 +143,10 @@ CREATE TABLE IF NOT EXISTS `especialidad` (
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_unicode_ci;
 
+
+-- ============================================
+-- ESPECIALIDADES INICIALES
+-- ============================================
 
 INSERT INTO `especialidad`
     (`nombre`, `comentarios`, `activo`)
@@ -212,6 +216,105 @@ ON DUPLICATE KEY UPDATE
     `id_especialidad` = `id_especialidad`;
 
 
+-- ============================================
+-- MÉDICO INICIAL DEL SISTEMA
+-- ============================================
+
+INSERT INTO usuario (
+    activo,
+    apellidos,
+    cedula,
+    correo,
+    nombre,
+    password,
+    telefono,
+    username,
+    rol
+)
+SELECT
+    b'1',
+    'Rodríguez Vargas',
+    'MED001',
+    'medico@healthnow.local',
+    'Carlos',
+    '$2a$10$CyaPKlgGlhV0BvphWBGyreOSBRZOu.XN4FfMh4ScXO.8Gc6/FwVUe',
+    '8888-0000',
+    'medico',
+    'DOCTOR'
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM usuario
+    WHERE username = 'medico'
+);
+
+
+
+CREATE TABLE IF NOT EXISTS `medico` (
+
+    `id_medico` INT NOT NULL AUTO_INCREMENT,
+
+    `id_usuario` INT NOT NULL,
+
+    `id_especialidad` INT NOT NULL,
+
+    `descripcion` VARCHAR(500) DEFAULT NULL,
+
+    PRIMARY KEY (`id_medico`),
+
+    UNIQUE KEY `uk_medico_usuario` (`id_usuario`),
+
+    CONSTRAINT `fk_medico_usuario`
+        FOREIGN KEY (`id_usuario`)
+        REFERENCES `usuario` (`id_usuario`),
+
+    CONSTRAINT `fk_medico_especialidad`
+        FOREIGN KEY (`id_especialidad`)
+        REFERENCES `especialidad` (`id_especialidad`)
+
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `medico` (
+    `id_usuario`,
+    `id_especialidad`,
+    `descripcion`
+)
+SELECT
+    u.id_usuario,
+    e.id_especialidad,
+    'Médico especializado en atención pediátrica'
+FROM usuario u
+INNER JOIN especialidad e
+    ON e.nombre = 'Pediatría'
+WHERE u.username = 'medico'
+  AND u.rol = 'DOCTOR'
+  AND NOT EXISTS (
+      SELECT 1
+      FROM medico m
+      WHERE m.id_usuario = u.id_usuario
+  );
+
+
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+
+USE healthnow;
+
+-- Verificar las tablas
+
+SHOW TABLES;
+
+
+-- Consultar usuarios registrados
+
 SELECT
     id_usuario,
     username,
@@ -222,6 +325,8 @@ SELECT
     activo
 FROM usuario;
 
+
+-- Verificar administrador
 
 SELECT
     id_usuario,
@@ -280,43 +385,42 @@ FROM especialidad
 WHERE activo = b'1';
 
 
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+-- ============================================
+-- CONSULTAR MÉDICOS CON SUS ESPECIALIDADES
+-- ============================================
 
-
-USE healthnow;
-
--- MÉDICO INICIAL DEL SISTEMA
-
-INSERT INTO usuario (
-    activo,
-    apellidos,
-    cedula,
-    correo,
-    nombre,
-    password,
-    telefono,
-    username,
-    rol
-)
 SELECT
-    b'1',
-    'Rodríguez Vargas',
-    'MED001',
-    'medico@healthnow.local',
-    'Carlos',
-    '$2a$10$CyaPKlgGlhV0BvphWBGyreOSBRZOu.XN4FfMh4ScXO.8Gc6/FwVUe',
-    '8888-0000',
-    'medico',
-    'DOCTOR'
-WHERE NOT EXISTS (
-    SELECT 1
-    FROM usuario
-    WHERE username = 'medico'
-);
+    m.id_medico,
+    u.nombre,
+    u.apellidos,
+    u.username,
+    e.nombre AS especialidad,
+    m.descripcion
+FROM medico m
+INNER JOIN usuario u
+    ON m.id_usuario = u.id_usuario
+INNER JOIN especialidad e
+    ON m.id_especialidad = e.id_especialidad
+WHERE u.rol = 'DOCTOR';
+
+
+-- ============================================
+-- CONSULTAR MÉDICOS DE PEDIATRÍA
+-- ============================================
+
+SELECT
+    m.id_medico,
+    u.nombre,
+    u.apellidos,
+    e.nombre AS especialidad,
+    m.descripcion
+FROM medico m
+INNER JOIN usuario u
+    ON m.id_usuario = u.id_usuario
+INNER JOIN especialidad e
+    ON m.id_especialidad = e.id_especialidad
+WHERE e.nombre = 'Pediatría'
+  AND e.activo = b'1'
+  AND u.activo = b'1'
+  AND u.rol = 'DOCTOR';
+
