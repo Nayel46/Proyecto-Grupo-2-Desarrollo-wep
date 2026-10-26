@@ -1,0 +1,348 @@
+
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <!-- HEAD GENERAL -->
+    <head th:fragment="head">
+
+        <meta charset="UTF-8">
+
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1.0">
+
+        <title>HealthNow</title>
+
+        <style>
+
+            :root {
+                --azul: #1766a4;
+                --azul-oscuro: #124c7b;
+                --verde: #25a56a;
+                --fondo: #f5f8fc;
+                --texto: #24364b;
+                --borde: #dce6f0;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                font-family: Arial, sans-serif;
+                background: var(--fondo);
+                color: var(--texto);
+            }
+
+            /* ENCABEZADO GENERAL */
+
+            .encabezado {
+                background: var(--azul);
+                padding: 20px 6%;
+            }
+
+            .encabezado-contenido {
+                max-width: 1200px;
+                margin: auto;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .logo {
+                color: white;
+                font-size: 25px;
+                font-weight: bold;
+                text-decoration: none;
+            }
+
+            /* NAVEGACIÓN */
+
+            .navegacion {
+                display: flex;
+                align-items: center;
+                gap: 22px;
+            }
+
+            .navegacion a {
+                color: white;
+                text-decoration: none;
+                font-size: 14px;
+            }
+
+            .navegacion a:hover {
+                text-decoration: underline;
+            }
+
+            /* INFORMACIÓN DEL USUARIO */
+
+            .navegacion .enlace-usuario {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                color: white;
+                text-decoration: none;
+                cursor: pointer;
+                padding: 5px 10px;
+                border-radius: 8px;
+                transition: background 0.2s ease;
+            }
+
+            .enlace-usuario:hover {
+                background: rgba(255, 255, 255, 0.12);
+                text-decoration: none !important;
+            }
+
+            /* ÍCONO DEL USUARIO */
+
+            .icono-usuario {
+                width: 34px;
+                height: 34px;
+                border: 1px solid white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 19px;
+                flex-shrink: 0;
+            }
+
+            /* NOMBRE Y ROL */
+
+            .datos-usuario {
+                display: flex;
+                flex-direction: column;
+                gap: 3px;
+                text-align: left;
+            }
+
+            .datos-usuario strong {
+                font-size: 13px;
+                color: white;
+            }
+
+            .datos-usuario small {
+                font-size: 11px;
+                color: white;
+            }
+
+            /* CONTENIDO GENERAL */
+
+            .contenido {
+                max-width: 1200px;
+                margin: 40px auto;
+                padding: 0 20px;
+            }
+
+            .tarjeta {
+                background: white;
+                padding: 32px;
+                border-radius: 16px;
+                border: 1px solid var(--borde);
+                box-shadow: 0 8px 28px rgba(25, 67, 105, 0.08);
+            }
+
+            /* BOTONES */
+
+            .boton {
+                display: inline-block;
+                padding: 12px 20px;
+                border: none;
+                border-radius: 9px;
+                font-size: 14px;
+                font-weight: bold;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+            .boton-verde {
+                background: var(--verde);
+                color: white;
+            }
+
+            .boton-azul {
+                background: var(--azul);
+                color: white;
+            }
+
+            .boton-gris {
+                background: #edf2f7;
+                color: #42566c;
+            }
+
+            /* MENSAJES */
+
+            .mensaje-exito {
+                max-width: 1200px;
+                margin: 20px auto;
+                padding: 15px 20px;
+                background: #e4f7ed;
+                color: #176b42;
+                border-radius: 10px;
+            }
+
+            /* PIE DE PÁGINA */
+
+            .pie-pagina {
+                margin-top: 60px;
+                padding: 25px 20px;
+                text-align: center;
+                background: var(--azul-oscuro);
+                color: white;
+                font-size: 13px;
+            }
+
+            /* RESPONSIVE */
+
+            @media (max-width: 768px) {
+
+                .encabezado-contenido {
+                    flex-direction: column;
+                }
+
+                .navegacion {
+                    flex-wrap: wrap;
+                    justify-content: center;
+                    gap: 15px;
+                }
+
+                .tarjeta {
+                    padding: 22px;
+                }
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <!-- HEADER GENERAL -->
+
+        <header th:fragment="header"
+                class="encabezado">
+
+            <div class="encabezado-contenido">
+
+                <!-- LOGO -->
+
+                <a class="logo" th:href="@{/}">
+                    HealthNow
+                </a>
+
+                <!-- NAVEGACIÓN -->
+
+                <nav class="navegacion">
+
+                    <!-- INICIO -->
+
+                    <a th:href="@{/}">
+                        Inicio
+                    </a>
+
+                    <!-- ESPECIALIDADES -->
+
+                    <a th:href="@{/especialidad/listado}">
+                        Especialidades
+                    </a>
+
+                    <!-- INICIAR SESIÓN -->
+
+                    <a th:href="@{/login}"
+                       sec:authorize="isAnonymous()">
+                        Iniciar sesión
+                    </a>
+
+                    <!-- INFORMACIÓN PERSONAL -->
+                    <!-- SOLO USUARIOS AUTENTICADOS -->
+
+                    <a th:href="@{/perfil}"
+                       sec:authorize="isAuthenticated()"
+                       class="enlace-usuario"
+                       title="Ver información personal">
+
+                        <!-- ÍCONO -->
+
+                        <span class="icono-usuario">
+                            &#9786;
+                        </span>
+
+                        <!-- NOMBRE Y ROL -->
+
+                        <span class="datos-usuario">
+
+                            <strong sec:authentication="name">
+                                Usuario
+                            </strong>
+
+                            <!-- PACIENTE -->
+
+                            <small sec:authorize="hasRole('PACIENTE')">
+                                Paciente
+                            </small>
+
+                            <!-- DOCTOR -->
+
+                            <small sec:authorize="hasRole('DOCTOR')">
+                                Doctor
+                            </small>
+
+                            <!-- ADMINISTRADOR -->
+
+                            <small sec:authorize="hasRole('ADMIN')">
+                                Administrador
+                            </small>
+
+                        </span>
+
+                    </a>
+
+                    <!-- CERRAR SESIÓN -->
+
+                    <form th:action="@{/logout}"
+                          method="post"
+                          sec:authorize="isAuthenticated()">
+
+                        <button type="submit"
+                                class="boton boton-gris">
+                            Cerrar sesión
+                        </button>
+
+                    </form>
+
+                </nav>
+
+            </div>
+
+        </header>
+
+        <!-- MENSAJES DE CONFIRMACIÓN -->
+
+        <section th:fragment="mostrarToast">
+
+            <div th:if="${mensaje != null}"
+                 class="mensaje-exito"
+                 th:text="${mensaje}">
+            </div>
+
+        </section>
+
+        <!-- FOOTER GENERAL -->
+
+        <footer th:fragment="footer"
+                class="pie-pagina">
+
+            <p>
+                © 2026 HealthNow - Sistema de Gestión de Citas Médicas
+            </p>
+
+        </footer>
+
+    </body>
+
+</html>

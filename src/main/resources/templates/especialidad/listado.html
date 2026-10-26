@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+    <head th:replace="~{general/fragmentos :: head}"></head>
+
+    <body>
+
+        <header th:replace="~{general/fragmentos :: header}"></header>
+
+        <!-- ======================================= -->
+        <!-- VISTA PARA ADMINISTRADOR -->
+        <!-- ======================================= -->
+
+        <div sec:authorize="hasRole('ADMIN')">
+
+            <!-- LISTADO DE ESPECIALIDADES -->
+            <th:block th:if="${medicos == null}">
+                <section th:replace="~{especialidad/fragmentos :: listado}">
+                </section>
+            </th:block>
+
+            <!-- MÉDICOS DE LA ESPECIALIDAD -->
+            <th:block th:if="${medicos != null}">
+                <section th:replace="~{especialidad/fragmentos :: medicos}">
+                </section>
+            </th:block>
+
+        </div>
+
+        <!-- ======================================= -->
+        <!-- VISTA PARA PACIENTE -->
+        <!-- ======================================= -->
+
+        <div sec:authorize="hasRole('PACIENTE')">
+
+            <!-- ESPECIALIDADES DISPONIBLES -->
+            <th:block th:if="${medicos == null}">
+                <section th:replace="~{especialidad/fragmentos :: servicios}">
+                </section>
+            </th:block>
+
+            <!-- MÉDICOS DE LA ESPECIALIDAD -->
+            <th:block th:if="${medicos != null}">
+                <section th:replace="~{especialidad/fragmentos :: medicos}">
+                </section>
+            </th:block>
+
+        </div>
+
+        <!-- ======================================= -->
+        <!-- NOTIFICACIONES -->
+        <!-- ======================================= -->
+
+        <section th:replace="~{general/fragmentos :: mostrarToast}">
+        </section>
+
+        <!-- ======================================= -->
+        <!-- PIE DE PÁGINA -->
+        <!-- ======================================= -->
+
+        <footer th:replace="~{general/fragmentos :: footer}">
+        </footer>
+
+    </body>
+</html>

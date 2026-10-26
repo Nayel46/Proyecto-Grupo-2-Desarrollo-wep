@@ -1,0 +1,396 @@
+
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="~{general/fragmentos :: head}"></head>
+
+<body>
+
+    <header th:replace="~{general/fragmentos :: header}"></header>
+
+    <main class="contenido">
+
+        <style>
+            .informacion-personal {
+                background: white;
+                padding: 35px 40px;
+                border-radius: 12px;
+                min-height: 460px;
+            }
+
+            .titulo-perfil {
+                font-size: 24px;
+                font-weight: bold;
+                color: #24364b;
+                margin: 0 0 15px;
+            }
+
+            .linea-perfil {
+                border: none;
+                border-top: 1px solid #dce6f0;
+                margin-bottom: 30px;
+            }
+
+            .contenedor-datos {
+                display: grid;
+                grid-template-columns: repeat(6, 1fr);
+                gap: 20px;
+            }
+
+            .tarjeta-dato {
+                grid-column: span 2;
+                border: 1px solid #dce6f0;
+                border-radius: 6px;
+                background: white;
+                padding: 16px 18px;
+                min-height: 95px;
+            }
+
+            .tarjeta-dato:nth-child(5):last-child,
+            .tarjeta-dato:nth-last-child(2):nth-child(4) {
+                grid-column: span 3;
+            }
+
+            .encabezado-dato {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .encabezado-dato strong {
+                font-size: 13px;
+                color: #24364b;
+            }
+
+            .icono-editar {
+                font-size: 17px;
+                color: #1766a4;
+            }
+
+            .tarjeta-dato p {
+                font-size: 13px;
+                color: #526578;
+                margin: 14px 0 0;
+                overflow-wrap: anywhere;
+            }
+
+            .contenedor-modificar {
+                text-align: center;
+                margin-top: 35px;
+            }
+
+            .boton-modificar {
+                display: inline-block;
+                background: #25a56a;
+                color: white;
+                padding: 12px 35px;
+                border: none;
+                border-radius: 25px;
+                font-size: 14px;
+                font-weight: bold;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+            .boton-modificar:hover {
+                background: #1b8755;
+                color: white;
+            }
+
+            .contenedor-cerrar-sesion {
+                text-align: center;
+                margin-top: 25px;
+            }
+
+            .boton-cerrar-sesion {
+                background: #1766a4;
+                color: white;
+                padding: 12px 45px;
+                border: none;
+                border-radius: 25px;
+                font-size: 14px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .boton-cerrar-sesion:hover {
+                background: #124c7b;
+            }
+
+            .contenedor-volver {
+                margin-top: 45px;
+            }
+
+            .enlace-volver {
+                text-decoration: none;
+                color: #1766a4;
+                font-size: 14px;
+                font-weight: bold;
+            }
+
+            .enlace-volver:hover {
+                text-decoration: underline;
+            }
+
+            .mensaje-exito {
+                background: #e4f7ed;
+                color: #176b42;
+                padding: 15px 20px;
+                border-radius: 10px;
+                margin-bottom: 25px;
+            }
+
+            .administracion-usuarios {
+                background: white;
+                padding: 35px 40px;
+                border-radius: 12px;
+                margin-bottom: 30px;
+            }
+
+            .encabezado-administracion {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+
+            .titulo-tabla {
+                font-size: 20px;
+                color: #24364b;
+                margin: 0;
+            }
+
+            .seccion-tabla {
+                margin-bottom: 40px;
+            }
+
+            .tabla-responsive {
+                overflow-x: auto;
+            }
+
+            .tabla-usuarios {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .tabla-usuarios th,
+            .tabla-usuarios td {
+                padding: 13px;
+                border: 1px solid #dce6f0;
+                text-align: left;
+                font-size: 13px;
+            }
+
+            .tabla-usuarios th {
+                background: #edf5fa;
+                color: #24364b;
+            }
+
+            .tabla-usuarios td {
+                color: #526578;
+            }
+
+            .boton-agregar {
+                display: inline-block;
+                background: #25a56a;
+                color: white;
+                border: none;
+                border-radius: 20px;
+                padding: 10px 20px;
+                font-size: 13px;
+                text-decoration: none;
+            }
+
+            .acciones-tabla {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+            }
+
+            .boton-editar {
+                background: #1766a4;
+                color: white;
+                padding: 8px 14px;
+                border-radius: 6px;
+                font-size: 12px;
+                text-decoration: none;
+            }
+
+            .boton-desactivar {
+                background: #cf4545;
+                color: white;
+                padding: 8px 14px;
+                border: none;
+                border-radius: 6px;
+                font-size: 12px;
+                cursor: pointer;
+            }
+
+            .sin-registros {
+                text-align: center !important;
+                padding: 25px !important;
+            }
+
+            @media (max-width: 768px) {
+                .informacion-personal,
+                .administracion-usuarios {
+                    padding: 25px 18px;
+                }
+
+                .contenedor-datos {
+                    grid-template-columns: 1fr;
+                    gap: 15px;
+                }
+
+                .tarjeta-dato,
+                .tarjeta-dato:nth-child(5):last-child,
+                .tarjeta-dato:nth-last-child(2):nth-child(4) {
+                    grid-column: auto;
+                }
+
+                .encabezado-administracion {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+
+                .acciones-tabla {
+                    flex-wrap: wrap;
+                }
+            }
+        </style>
+
+        <div th:if="${mensaje != null}"
+             class="mensaje-exito"
+             th:text="${mensaje}">
+        </div>
+
+        <section th:if="${mostrarAdministracion == true}"
+                 sec:authorize="hasRole('ADMIN')"
+                 class="administracion-usuarios">
+
+            <h1 class="titulo-perfil">
+                Administración de Usuarios
+            </h1>
+
+            <hr class="linea-perfil">
+
+            <div class="seccion-tabla">
+
+                <div class="encabezado-administracion">
+                    <h2 class="titulo-tabla">Pacientes</h2>
+                    <span class="boton-agregar">Agregar Paciente</span>
+                </div>
+
+                <div class="tabla-responsive">
+                    <table class="tabla-usuarios">
+                        <thead>
+                            <tr>
+                                <th>Nombre Completo</th>
+                                <th>Cédula</th>
+                                <th>Correo Electrónico</th>
+                                <th>Teléfono</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr th:each="paciente : ${pacientes}">
+                                <td th:text="${paciente.nombre + ' ' + paciente.apellidos}"></td>
+                                <td th:text="${paciente.cedula}"></td>
+                                <td th:text="${paciente.correo}"></td>
+                                <td th:text="${paciente.telefono != null ? paciente.telefono : 'No registrado'}"></td>
+                                <td>
+                                    <div class="acciones-tabla">
+                                        <span class="boton-editar">Editar</span>
+                                        <span class="boton-desactivar">Desactivar</span>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr th:if="${#lists.isEmpty(pacientes)}">
+                                <td colspan="5" class="sin-registros">
+                                    No hay pacientes registrados.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <div class="seccion-tabla">
+
+                <div class="encabezado-administracion">
+                    <h2 class="titulo-tabla">Médicos</h2>
+                    <span class="boton-agregar">Agregar Médico</span>
+                </div>
+
+                <div class="tabla-responsive">
+                    <table class="tabla-usuarios">
+                        <thead>
+                            <tr>
+                                <th>Nombre Completo</th>
+                                <th>Cédula</th>
+                                <th>Correo Electrónico</th>
+                                <th>Teléfono</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr th:each="medico : ${medicos}">
+                                <td th:text="${medico.nombre + ' ' + medico.apellidos}"></td>
+                                <td th:text="${medico.cedula}"></td>
+                                <td th:text="${medico.correo}"></td>
+                                <td th:text="${medico.telefono != null ? medico.telefono : 'No registrado'}"></td>
+                                <td>
+                                    <div class="acciones-tabla">
+                                        <span class="boton-editar">Editar</span>
+                                        <span class="boton-desactivar">Desactivar</span>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr th:if="${#lists.isEmpty(medicos)}">
+                                <td colspan="5" class="sin-registros">
+                                    No hay médicos registrados.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <div class="contenedor-volver">
+                <a th:href="@{/}" class="enlace-volver">
+                    &#8592; Volver
+                </a>
+            </div>
+
+        </section>
+
+        <section th:unless="${mostrarAdministracion == true}"
+                 th:replace="~{usuario/fragmentos :: informacionPersonal}">
+        </section>
+
+        <div th:unless="${mostrarAdministracion == true}"
+             class="contenedor-modificar">
+
+            <a th:href="@{/perfil/modificar}"
+               class="boton-modificar">
+                Modificar Información Personal
+            </a>
+
+        </div>
+
+    </main>
+
+    <footer th:replace="~{general/fragmentos :: footer}"></footer>
+
+</body>
+</html>

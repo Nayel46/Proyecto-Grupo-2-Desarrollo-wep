@@ -1,0 +1,1065 @@
+
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>HealthNow | Inicio</title>
+        <style>
+            :root {
+                --azul-oscuro: #0076a8;
+                --azul: #0089be;
+                --azul-claro: #34a5d2;
+                --azul-suave: #eaf7fc;
+                --verde: #57e987;
+                --texto: #233748;
+                --gris: #718395;
+                --fondo: #f5f9fc;
+                --borde: #e0eaf0;
+                --sombra: 0 5px 22px rgba(21,91,129,.07);
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                font-family: Arial, Helvetica, sans-serif;
+                color: var(--texto);
+                background: var(--fondo);
+            }
+
+            a {
+                text-decoration: none;
+            }
+
+            button, input, select {
+                font-family: inherit;
+            }
+
+            .barra-superior {
+                background: var(--azul-oscuro);
+                min-height: 42px;
+                padding: 7px 6%;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                color: white;
+            }
+
+            .usuario {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-size: 12px;
+            }
+
+            .enlace-perfil {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                color: white;
+                text-decoration: none;
+                cursor: pointer;
+                padding: 4px 8px;
+                border-radius: 8px;
+                transition: background .2s ease;
+            }
+
+            .enlace-perfil:hover {
+                background: rgba(255,255,255,.12);
+                color: white;
+            }
+
+            .enlace-perfil .usuario-info,
+            .enlace-perfil .usuario-info strong,
+            .enlace-perfil .usuario-info span {
+                color: white;
+            }
+
+            .usuario-icono {
+                width: 30px;
+                height: 30px;
+                border: 1px solid rgba(255,255,255,.7);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 17px;
+            }
+
+            .usuario-info {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            .usuario-info strong {
+                font-size: 13px;
+            }
+
+            .btn-salir {
+                background: transparent;
+                color: white;
+                border: 1px solid rgba(255,255,255,.8);
+                border-radius: 20px;
+                padding: 7px 15px;
+                cursor: pointer;
+            }
+
+            .btn-salir:hover {
+                background: rgba(255,255,255,.15);
+            }
+
+            .nav-principal {
+                background: var(--azul-claro);
+                padding: 14px 6%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 25px;
+                flex-wrap: wrap;
+                box-shadow: 0 3px 10px rgba(0,0,0,.08);
+            }
+
+            .logo {
+                font-size: 27px;
+                font-weight: bold;
+                color: white;
+            }
+
+            .nav-enlaces {
+                display: flex;
+                align-items: center;
+                gap: 26px;
+                flex-wrap: wrap;
+            }
+
+            .nav-enlaces a {
+                color: white;
+                font-size: 14px;
+            }
+
+            .nav-enlaces a:hover {
+                opacity: .75;
+            }
+
+            .btn-agendar {
+                background: var(--verde);
+                color: #13412b !important;
+                padding: 10px 24px;
+                border-radius: 25px;
+                font-weight: bold;
+            }
+
+            .contenido {
+                width: 100%;
+                max-width: 1450px;
+                margin: auto;
+                padding: 38px 6% 60px;
+                min-height: 75vh;
+            }
+
+            .encabezado-seccion {
+                margin-bottom: 30px;
+            }
+
+            .encabezado-seccion h1 {
+                margin: 0 0 10px;
+                font-size: clamp(25px,3vw,34px);
+                color: #17415b;
+            }
+
+            .encabezado-seccion p {
+                margin: 0;
+                font-size: 15px;
+                color: var(--gris);
+                line-height: 1.7;
+            }
+
+            .titulo-bloque {
+                margin: 38px 0 18px;
+                font-size: 22px;
+                color: #24465b;
+            }
+
+            .subtitulo-bloque {
+                margin: -8px 0 20px;
+                font-size: 14px;
+                color: var(--gris);
+            }
+
+            .btn {
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+                gap: 8px;
+                padding: 11px 23px;
+                border-radius: 25px;
+                border: none;
+                background: var(--azul);
+                color: white;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: .2s;
+            }
+
+            .btn:hover {
+                background: var(--azul-oscuro);
+                transform: translateY(-2px);
+            }
+
+            .btn-verde {
+                background: var(--verde);
+                color: #16462b;
+            }
+
+            .btn-verde:hover {
+                background: #3fd976;
+            }
+
+            .btn-secundario {
+                background: var(--azul-suave);
+                color: var(--azul-oscuro);
+            }
+
+            .acciones-admin {
+                display: grid;
+                grid-template-columns: repeat(2,minmax(0,1fr));
+                gap: 22px;
+                margin: 30px 0 40px;
+            }
+
+            .accion-admin {
+                background: white;
+                border: 1px solid var(--borde);
+                border-radius: 18px;
+                padding: 27px;
+                box-shadow: var(--sombra);
+                display: flex;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .accion-icono {
+                width: 55px;
+                height: 55px;
+                border-radius: 15px;
+                background: var(--azul-suave);
+                color: var(--azul-oscuro);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 26px;
+                flex-shrink: 0;
+            }
+
+            .accion-texto {
+                flex: 1;
+            }
+
+            .accion-texto h3 {
+                margin: 0 0 8px;
+                font-size: 17px;
+            }
+
+            .accion-texto p {
+                margin: 0;
+                font-size: 13px;
+                line-height: 1.6;
+                color: var(--gris);
+            }
+
+            .especialidades-grid {
+                display: grid;
+                grid-template-columns: repeat(5,minmax(0,1fr));
+                gap: 18px;
+            }
+
+            .especialidad-card {
+                min-height: 145px;
+                background: white;
+                border: 1px solid var(--borde);
+                border-radius: 16px;
+                box-shadow: var(--sombra);
+                padding: 20px 12px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 13px;
+                text-align: center;
+                transition: .2s;
+                color: var(--texto);
+            }
+
+            a.especialidad-card:hover {
+                border-color: var(--azul-claro);
+                transform: translateY(-4px);
+                box-shadow: 0 10px 25px rgba(0,120,170,.13);
+            }
+
+            .especialidad-icono {
+                width: 52px;
+                height: 52px;
+                border-radius: 15px;
+                background: var(--azul-suave);
+                color: var(--azul-oscuro);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+            }
+
+            .especialidad-card span {
+                font-size: 13px;
+                font-weight: 600;
+                line-height: 1.4;
+                overflow-wrap: anywhere;
+            }
+
+            .especialidad-vacia {
+                grid-column: 1 / -1;
+                padding: 35px;
+                background: white;
+                border: 1px dashed var(--borde);
+                border-radius: 16px;
+                color: var(--gris);
+                text-align: center;
+            }
+
+            .buscador-panel {
+                background: white;
+                border-radius: 20px;
+                border: 1px solid var(--borde);
+                box-shadow: var(--sombra);
+                padding: 28px;
+                margin: 25px 0 35px;
+            }
+
+            .buscador-panel h2 {
+                margin: 0 0 22px;
+                font-size: 19px;
+            }
+
+            .buscador-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr auto;
+                gap: 20px;
+                align-items: end;
+            }
+
+            .campo label {
+                display: block;
+                margin-bottom: 9px;
+                font-size: 13px;
+                font-weight: 600;
+            }
+
+            .campo select {
+                width: 100%;
+                height: 44px;
+                border: 1px solid #cbdce6;
+                border-radius: 12px;
+                padding: 0 14px;
+                background: white;
+                font-size: 14px;
+                color: var(--texto);
+            }
+
+            .campo select:disabled {
+                background: #f0f3f6;
+                color: #81909c;
+                cursor: not-allowed;
+            }
+
+            .buscador-grid .btn {
+                height: 44px;
+                min-width: 130px;
+            }
+
+            .panel-tabla {
+                background: white;
+                border-radius: 18px;
+                padding: 25px;
+                border: 1px solid var(--borde);
+                box-shadow: var(--sombra);
+                margin-bottom: 30px;
+            }
+
+            .panel-tabla h2 {
+                margin: 0 0 22px;
+                font-size: 21px;
+            }
+
+            .tabla-scroll {
+                overflow-x: auto;
+            }
+
+            .tabla-citas {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 13px;
+            }
+
+            .tabla-citas th {
+                background: var(--azul-suave);
+                color: #28536b;
+                text-align: left;
+                padding: 14px 12px;
+                border-bottom: 2px solid #cde7f4;
+            }
+
+            .tabla-citas td {
+                padding: 16px 12px;
+                border-bottom: 1px solid var(--borde);
+            }
+
+            .tabla-vacia {
+                text-align: center;
+                color: var(--gris);
+                padding: 35px 15px !important;
+            }
+
+            .panel-acciones {
+                margin-top: 20px;
+                display: flex;
+                justify-content: flex-end;
+            }
+
+            .informacion {
+                margin-top: 50px;
+                background: linear-gradient(
+                    110deg,
+                    var(--azul-oscuro),
+                    #119ac7
+                    );
+                border-radius: 20px;
+                display: grid;
+                grid-template-columns: repeat(3,1fr);
+                overflow: hidden;
+                color: white;
+                box-shadow: var(--sombra);
+            }
+
+            .info-item {
+                padding: 27px 20px;
+                text-align: center;
+            }
+
+            .info-item:not(:last-child) {
+                border-right: 1px solid rgba(255,255,255,.25);
+            }
+
+            .info-icono {
+                font-size: 27px;
+                margin-bottom: 12px;
+            }
+
+            .info-item h3 {
+                margin: 0 0 7px;
+                font-size: 16px;
+            }
+
+            .info-item p {
+                margin: 0;
+                font-size: 13px;
+                color: rgba(255,255,255,.85);
+            }
+
+            .editar-info {
+                text-align: center;
+                margin-top: 22px;
+            }
+
+            .visitante {
+                text-align: center;
+                background: white;
+                border-radius: 22px;
+                padding: 65px 25px;
+                margin-top: 25px;
+                box-shadow: var(--sombra);
+            }
+
+            .visitante h1 {
+                color: var(--azul-oscuro);
+                font-size: 35px;
+            }
+
+            .visitante p {
+                color: var(--gris);
+                line-height: 1.8;
+            }
+
+            .visitante-acciones {
+                margin-top: 25px;
+                display: flex;
+                justify-content: center;
+                gap: 15px;
+                flex-wrap: wrap;
+            }
+
+            footer {
+                margin-top: 30px;
+                background: #087eae;
+                padding: 24px;
+                text-align: center;
+                color: white;
+                font-size: 13px;
+            }
+
+            @media (max-width:1100px) {
+                .especialidades-grid {
+                    grid-template-columns: repeat(3,1fr);
+                }
+
+                .acciones-admin {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            @media (max-width:750px) {
+                .nav-principal {
+                    padding: 16px 5%;
+                }
+
+                .nav-enlaces {
+                    gap: 15px;
+                }
+
+                .contenido {
+                    padding: 28px 5% 45px;
+                }
+
+                .especialidades-grid {
+                    grid-template-columns: repeat(2,1fr);
+                }
+
+                .buscador-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .acciones-admin {
+                    grid-template-columns: 1fr;
+                }
+
+                .accion-admin {
+                    flex-direction: column;
+                    text-align: center;
+                }
+
+                .informacion {
+                    grid-template-columns: 1fr;
+                }
+
+                .info-item:not(:last-child) {
+                    border-right: none;
+                    border-bottom: 1px solid rgba(255,255,255,.25);
+                }
+            }
+
+            @media (max-width:420px) {
+                .especialidades-grid {
+                    gap: 10px;
+                }
+
+                .especialidad-card {
+                    min-height: 125px;
+                    padding: 15px 8px;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <div class="barra-superior">
+
+            <div class="usuario"
+                 sec:authorize="isAuthenticated()">
+
+                <a th:href="@{/perfil}"
+                   class="enlace-perfil"
+                   title="Ver información personal">
+
+                    <div class="usuario-icono">
+                        &#9786;
+                    </div>
+
+                    <div class="usuario-info">
+
+                        <strong sec:authentication="name">
+                            Usuario
+                        </strong>
+
+                        <span sec:authorize="hasRole('ADMIN')">
+                            Administrador
+                        </span>
+
+                        <span sec:authorize="hasRole('DOCTOR')">
+                            Doctor
+                        </span>
+
+                        <span sec:authorize="hasRole('PACIENTE')">
+                            Paciente
+                        </span>
+
+                    </div>
+
+                </a>
+
+                <form th:action="@{/logout}" method="post">
+
+                    <button type="submit" class="btn-salir">
+                        Salir
+                    </button>
+
+                </form>
+
+            </div>
+
+            <div sec:authorize="isAnonymous()">
+
+                <a th:href="@{/login}"
+                   style="color:white;font-size:13px;">
+                    Iniciar sesión
+                </a>
+
+            </div>
+
+        </div>
+
+        <header class="nav-principal">
+
+            <a class="logo" th:href="@{/}">
+                HealthNow
+            </a>
+
+            <nav class="nav-enlaces">
+
+                <a th:href="@{/}">
+                    Inicio
+                </a>
+
+                <a th:href="@{/especialidad/listado}"
+                   sec:authorize="isAuthenticated()">
+                    Especialidades
+                </a>
+
+                <a href="#">
+                    Sobre nosotros
+                </a>
+
+                <a href="#">
+                    Contacto
+                </a>
+
+                <a class="btn-agendar"
+                   href="#"
+                   sec:authorize="hasRole('PACIENTE')">
+                    AGENDAR CITA
+                </a>
+
+                <a th:href="@{/registro}"
+                   sec:authorize="isAnonymous()">
+                    Registrarse
+                </a>
+
+            </nav>
+
+        </header>
+
+        <main class="contenido">
+
+            <section sec:authorize="hasRole('ADMIN')">
+
+                <div class="encabezado-seccion">
+
+                    <h1>Panel de Administración</h1>
+
+                    <p>
+                        Gestiona los servicios y la información
+                        de HealthNow desde un solo lugar.
+                    </p>
+
+                </div>
+
+                <div class="acciones-admin">
+
+                    <div class="accion-admin">
+
+                        <div class="accion-icono">
+                            &#9786;
+                        </div>
+
+                        <div class="accion-texto">
+
+                            <h3>Administrar Usuarios</h3>
+
+                            <p>
+                                Consulta y administra los usuarios
+                                registrados en la plataforma.
+                            </p>
+
+                        </div>
+
+
+                        <a class="btn"
+                           th:href="@{/admin/usuarios}">
+                            Administrar
+                        </a>
+
+                    </div>
+
+                    <div class="accion-admin">
+
+                        <div class="accion-icono">
+                            &#9881;
+                        </div>
+
+                        <div class="accion-texto">
+
+                            <h3>Administrar Especialidades</h3>
+
+                            <p>
+                                Gestiona las especialidades
+                                y servicios médicos disponibles.
+                            </p>
+
+                        </div>
+
+                        <a class="btn"
+                           th:href="@{/especialidad/listado}">
+                            Administrar
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section sec:authorize="hasRole('PACIENTE')">
+
+                <div class="encabezado-seccion">
+
+                    <h1>
+                        Encuentra profesionales de la salud
+                    </h1>
+
+                    <p>
+                        Explora nuestros servicios médicos
+                        y encuentra la atención que necesitas.
+                    </p>
+
+                </div>
+
+                <div class="buscador-panel">
+
+                    <h2>Buscar especialidades</h2>
+
+                    <form class="buscador-grid"
+                          th:action="@{/especialidad/buscar}"
+                          method="get">
+
+                        <div class="campo">
+
+                            <label for="nombre">
+                                ¿Qué necesitas?
+                            </label>
+
+                            <select id="nombre" name="nombre">
+
+                                <option value="">
+                                    Todas las especialidades
+                                </option>
+
+                                <option th:each="especialidad : ${especialidades}"
+                                        th:value="${especialidad.nombre}"
+                                        th:text="${especialidad.nombre}">
+                                    Especialidad
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="campo">
+
+                            <label for="tipo">
+                                Tipo de consulta
+                            </label>
+
+                            <select id="tipo" disabled>
+
+                                <option value="">
+                                    Próximamente
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <button type="submit"
+                                class="btn btn-verde">
+                            Buscar &#9906;
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </section>
+
+            <section sec:authorize="hasAnyRole('ADMIN','PACIENTE')">
+
+                <h2 class="titulo-bloque">
+                    Especialidades Médicas
+                </h2>
+
+                <p class="subtitulo-bloque">
+                    Conoce las especialidades disponibles
+                    en HealthNow.
+                </p>
+
+                <div class="especialidades-grid">
+
+                    <a class="especialidad-card"
+                       th:each="especialidad : ${especialidades}"
+                       th:href="@{/especialidad/buscar(nombre=${especialidad.nombre})}">
+
+                        <div class="especialidad-icono">
+                            &#9829;
+                        </div>
+
+                        <span th:text="${especialidad.nombre}">
+                            Nombre de especialidad
+                        </span>
+
+                    </a>
+
+                    <div class="especialidad-vacia"
+                         th:if="${especialidades == null or #lists.isEmpty(especialidades)}">
+
+                        No hay especialidades disponibles
+                        en este momento.
+
+                    </div>
+
+                </div>
+
+                <div style="margin-top:25px;"
+                     sec:authorize="hasRole('ADMIN')">
+
+                    <a class="btn btn-verde"
+                       th:href="@{/especialidad/nuevo}">
+                        + Agregar Especialidad
+                    </a>
+
+                </div>
+
+            </section>
+
+            <section sec:authorize="hasRole('DOCTOR')">
+
+                <div class="encabezado-seccion">
+
+                    <h1>Panel Médico</h1>
+
+                    <p>
+                        Consulta tu agenda y las citas
+                        pendientes de confirmar.
+                    </p>
+
+                </div>
+
+                <div class="panel-tabla">
+
+                    <h2>Citas del día</h2>
+
+                    <div class="tabla-scroll">
+
+                        <table class="tabla-citas">
+
+                            <thead>
+                                <tr>
+                                    <th>Horario</th>
+                                    <th>Nombre Paciente</th>
+                                    <th>Cédula</th>
+                                    <th>Correo Electrónico</th>
+                                    <th>Comentarios</th>
+                                    <th>Especialidad</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td colspan="7"
+                                        class="tabla-vacia">
+                                        No hay citas registradas para hoy.
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    <div class="panel-acciones">
+
+                        <a class="btn" href="#">
+                            Editar
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <div class="panel-tabla">
+
+                    <h2>Citas Pendientes de Confirmar</h2>
+
+                    <div class="tabla-scroll">
+
+                        <table class="tabla-citas">
+
+                            <thead>
+                                <tr>
+                                    <th>Horario</th>
+                                    <th>Nombre Paciente</th>
+                                    <th>Cédula</th>
+                                    <th>Correo Electrónico</th>
+                                    <th>Comentarios</th>
+                                    <th>Especialidad</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td colspan="7"
+                                        class="tabla-vacia">
+                                        No hay citas pendientes
+                                        de confirmar.
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    <div class="panel-acciones">
+
+                        <a class="btn" href="#">
+                            Editar
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section sec:authorize="hasAnyRole('ADMIN','PACIENTE')">
+
+                <div class="informacion">
+
+                    <div class="info-item">
+
+                        <div class="info-icono">
+                            &#9719;
+                        </div>
+
+                        <h3>Horario</h3>
+
+                        <p>
+                            Información de atención
+                        </p>
+
+                    </div>
+
+                    <div class="info-item">
+
+                        <div class="info-icono">
+                            &#9742;
+                        </div>
+
+                        <h3>Teléfonos</h3>
+
+                        <p>
+                            Información de contacto
+                        </p>
+
+                    </div>
+
+                    <div class="info-item">
+
+                        <div class="info-icono">
+                            &#9678;
+                        </div>
+
+                        <h3>Ubicación</h3>
+
+                        <p>
+                            Información del consultorio
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="editar-info"
+                     sec:authorize="hasRole('ADMIN')">
+
+                    <a class="btn" href="#">
+                        Editar Información
+                    </a>
+
+                </div>
+
+            </section>
+
+            <section class="visitante"
+                     sec:authorize="isAnonymous()">
+
+                <h1>
+                    Bienvenido a HealthNow
+                </h1>
+
+                <p>
+                    Tu salud, nuestra prioridad.
+                    Una plataforma para facilitar el acceso
+                    a los servicios de salud.
+                </p>
+
+                <div class="visitante-acciones">
+
+                    <a class="btn"
+                       th:href="@{/login}">
+                        Iniciar sesión
+                    </a>
+
+                    <a class="btn btn-verde"
+                       th:href="@{/registro}">
+                        Crear una cuenta
+                    </a>
+
+                </div>
+
+            </section>
+
+        </main>
+
+        <footer>
+            &copy; 2026 HealthNow |
+            Tu salud, nuestra prioridad.
+        </footer>
+
+    </body>
+</html>
