@@ -1,4 +1,3 @@
-
 CREATE DATABASE IF NOT EXISTS `healthnow`
 /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */
 /*!80016 DEFAULT ENCRYPTION='N' */;
@@ -61,7 +60,6 @@ CREATE TABLE IF NOT EXISTS `usuario` (
   `username` varchar(30)
       COLLATE utf8mb4_unicode_ci NOT NULL,
 
-  -- Campo para los roles
   `rol` varchar(20)
       COLLATE utf8mb4_unicode_ci
       NOT NULL DEFAULT 'PACIENTE',
@@ -121,6 +119,10 @@ WHERE NOT EXISTS (
 
 );
 
+
+-- ============================================
+-- TABLA ESPECIALIDAD
+-- ============================================
 
 CREATE TABLE IF NOT EXISTS `especialidad` (
 
@@ -248,6 +250,9 @@ WHERE NOT EXISTS (
 );
 
 
+-- ============================================
+-- TABLA MÉDICO
+-- ============================================
 
 CREATE TABLE IF NOT EXISTS `medico` (
 
@@ -275,6 +280,7 @@ CREATE TABLE IF NOT EXISTS `medico` (
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_unicode_ci;
 
+
 INSERT INTO `medico` (
     `id_usuario`,
     `id_especialidad`,
@@ -296,6 +302,72 @@ WHERE u.username = 'medico'
   );
 
 
+-- ============================================
+-- TABLA CITA
+-- FASE 3 - GESTIÓN DE CITAS MÉDICAS
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS `cita` (
+
+    `id_cita` INT NOT NULL AUTO_INCREMENT,
+
+    `id_paciente` INT NOT NULL,
+
+    `id_doctor` INT NOT NULL,
+
+    `fecha` DATE NOT NULL,
+
+    `hora` TIME NOT NULL,
+
+    `motivo` VARCHAR(500)
+        COLLATE utf8mb4_unicode_ci NOT NULL,
+
+    `modalidad` VARCHAR(20)
+        COLLATE utf8mb4_unicode_ci
+        NOT NULL DEFAULT 'PRESENCIAL',
+
+    `estado` VARCHAR(20)
+        COLLATE utf8mb4_unicode_ci
+        NOT NULL DEFAULT 'PENDIENTE',
+
+    PRIMARY KEY (`id_cita`),
+
+    KEY `idx_cita_paciente` (`id_paciente`),
+
+    KEY `idx_cita_doctor_fecha_hora`
+        (`id_doctor`, `fecha`, `hora`),
+
+    CONSTRAINT `fk_cita_paciente`
+        FOREIGN KEY (`id_paciente`)
+        REFERENCES `usuario` (`id_usuario`),
+
+    CONSTRAINT `fk_cita_doctor`
+        FOREIGN KEY (`id_doctor`)
+        REFERENCES `usuario` (`id_usuario`),
+
+    CONSTRAINT `chk_cita_modalidad`
+        CHECK (`modalidad` IN (
+            'PRESENCIAL',
+            'VIRTUAL'
+        )),
+
+    CONSTRAINT `chk_cita_estado`
+        CHECK (`estado` IN (
+            'PENDIENTE',
+            'CONFIRMADA',
+            'CANCELADA',
+            'ATENDIDA'
+        ))
+
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+
+-- ============================================
+-- RESTAURAR CONFIGURACIÓN ORIGINAL
+-- ============================================
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
@@ -306,7 +378,12 @@ WHERE u.username = 'medico'
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 
+-- ============================================
+-- CONSULTAS DE VERIFICACIÓN
+-- ============================================
+
 USE healthnow;
+
 
 -- Verificar las tablas
 
@@ -423,4 +500,89 @@ WHERE e.nombre = 'Pediatría'
   AND e.activo = b'1'
   AND u.activo = b'1'
   AND u.rol = 'DOCTOR';
+
+
+-- ============================================
+-- CONSULTAR TODAS LAS CITAS MÉDICAS
+-- ============================================
+
+SELECT
+    c.id_cita,
+    c.id_paciente,
+    c.id_doctor,
+    c.fecha,
+    c.hora,
+    c.motivo,
+    c.modalidad,
+    c.estado
+FROM cita c
+ORDER BY c.fecha ASC, c.hora ASC;
+
+
+-- ============================================
+-- CONSULTAR CITAS CON PACIENTE Y DOCTOR
+-- ============================================
+
+SELECT
+    c.id_cita,
+
+    CONCAT(
+        p.nombre, ' ', p.apellidos
+    ) AS paciente,
+
+    CONCAT(
+        d.nombre, ' ', d.apellidos
+    ) AS doctor,
+
+    c.fecha,
+    c.hora,
+    c.motivo,
+    c.modalidad,
+    c.estado
+
+FROM cita c
+
+INNER JOIN usuario p
+    ON c.id_paciente = p.id_usuario
+
+INNER JOIN usuario d
+    ON c.id_doctor = d.id_usuario
+
+ORDER BY c.fecha ASC, c.hora ASC;
+
+
+-- ============================================
+-- CONSULTAR CITAS PENDIENTES
+-- ============================================
+
+SELECT
+    id_cita,
+    id_paciente,
+    id_doctor,
+    fecha,
+    hora,
+    motivo,
+    modalidad,
+    estado
+FROM cita
+WHERE estado = 'PENDIENTE'
+ORDER BY fecha ASC, hora ASC;
+
+
+-- ============================================
+-- CONTAR CITAS POR ESTADO
+-- ============================================
+
+SELECT
+    estado,
+    COUNT(*) AS total_citas
+FROM cita
+GROUP BY estado;
+
+
+-- ============================================
+-- VERIFICAR ESTRUCTURA DE CITA
+-- ============================================
+
+DESCRIBE cita;
 

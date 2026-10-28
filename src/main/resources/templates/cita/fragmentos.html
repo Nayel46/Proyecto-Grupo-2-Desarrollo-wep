@@ -1,0 +1,146 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Fragmentos de Citas - HealthNow</title>
+</head>
+<body>
+
+    <div th:fragment="botonAgendar" class="mb-3">
+        <a th:href="@{/cita/agendar}"
+           class="btn btn-primary">
+            Agendar nueva cita
+        </a>
+    </div>
+
+    <div th:fragment="mensajes">
+
+        <div th:if="${mensaje}"
+             class="alert alert-success alert-dismissible fade show"
+             role="alert">
+
+            <span th:text="${mensaje}"></span>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Cerrar">
+            </button>
+        </div>
+
+        <div th:if="${error}"
+             class="alert alert-danger alert-dismissible fade show"
+             role="alert">
+
+            <span th:text="${error}"></span>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Cerrar">
+            </button>
+        </div>
+
+    </div>
+
+    <div th:fragment="tablaCitas">
+
+        <div th:if="${#lists.isEmpty(citas)}"
+             class="alert alert-info text-center">
+            No hay citas médicas registradas.
+        </div>
+
+        <div th:unless="${#lists.isEmpty(citas)}"
+             class="table-responsive">
+
+            <table class="table table-striped table-hover align-middle">
+
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th th:text="${rolActual == 'DOCTOR'} ? 'Paciente' : 'Doctor'">
+                            Doctor
+                        </th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Motivo</th>
+                        <th>Modalidad</th>
+                        <th>Estado</th>
+                        <th th:if="${rolActual == 'PACIENTE'}">
+                            Acciones
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr th:each="cita : ${citas}">
+
+                        <td th:text="${cita.idCita}"></td>
+
+                        <td th:if="${rolActual == 'DOCTOR'}"
+                            th:text="${cita.paciente.nombre + ' ' + cita.paciente.apellidos}">
+                        </td>
+
+                        <td th:if="${rolActual == 'PACIENTE'}"
+                            th:text="${cita.doctor.nombre + ' ' + cita.doctor.apellidos}">
+                        </td>
+
+                        <td th:text="${#temporals.format(cita.fecha, 'dd/MM/yyyy')}">
+                        </td>
+
+                        <td th:text="${#temporals.format(cita.hora, 'HH:mm')}">
+                        </td>
+
+                        <td th:text="${cita.motivo}"></td>
+
+                        <td th:text="${cita.modalidad}"></td>
+
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${cita.estado == 'CONFIRMADA'} ? 'bg-success' :
+                                                 (${cita.estado == 'PENDIENTE'} ? 'bg-warning text-dark' :
+                                                 (${cita.estado == 'CANCELADA'} ? 'bg-danger' : 'bg-secondary'))"
+                                  th:text="${cita.estado}">
+                            </span>
+                        </td>
+
+                        <td th:if="${rolActual == 'PACIENTE'}">
+
+                            <div th:if="${cita.estado != 'CANCELADA' and cita.estado != 'ATENDIDA'}"
+                                 class="d-flex gap-2">
+
+                                <a th:href="@{/cita/editar/{id}(id=${cita.idCita})}"
+                                   class="btn btn-sm btn-outline-primary">
+                                    Editar
+                                </a>
+
+                                <form th:action="@{/cita/cancelar/{id}(id=${cita.idCita})}"
+                                      method="post"
+                                      onsubmit="return confirm('¿Está seguro de cancelar esta cita?');">
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger">
+                                        Cancelar
+                                    </button>
+                                </form>
+
+                            </div>
+
+                            <span th:if="${cita.estado == 'CANCELADA' or cita.estado == 'ATENDIDA'}"
+                                  class="text-muted">
+                                Sin acciones
+                            </span>
+
+                        </td>
+
+                    </tr>
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+</body>
+</html>

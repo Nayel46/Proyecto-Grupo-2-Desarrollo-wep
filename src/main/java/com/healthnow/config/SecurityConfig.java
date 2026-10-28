@@ -5,12 +5,14 @@ import com.healthnow.service.UsuarioDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
@@ -42,7 +44,6 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
-                // Páginas públicas
                 .requestMatchers(
                     "/",
                     "/login",
@@ -54,23 +55,32 @@ public class SecurityConfig {
                     "/favicon.ico"
                 ).permitAll()
 
-                // Funciones exclusivas del administrador
                 .requestMatchers("/admin/**")
                 .hasRole("ADMIN")
 
-                // Funciones exclusivas del doctor
                 .requestMatchers("/doctor/**")
                 .hasRole("DOCTOR")
 
-                // Funciones exclusivas del paciente
                 .requestMatchers("/paciente/**")
                 .hasRole("PACIENTE")
 
-                // Especialidades para usuarios autenticados
                 .requestMatchers("/especialidad/**")
                 .hasAnyRole("ADMIN", "DOCTOR", "PACIENTE")
 
-                // Las demás rutas requieren autenticación
+                .requestMatchers(
+                    "/cita/agendar",
+                    "/cita/guardar",
+                    "/cita/editar/**",
+                    "/cita/actualizar/**",
+                    "/cita/cancelar/**"
+                ).hasRole("PACIENTE")
+
+                .requestMatchers("/cita/listado")
+                .hasAnyRole("PACIENTE", "DOCTOR")
+
+                .requestMatchers("/cita/**")
+                .hasAnyRole("PACIENTE", "DOCTOR")
+
                 .anyRequest().authenticated()
             )
 
@@ -80,7 +90,6 @@ public class SecurityConfig {
                 .usernameParameter("username")
                 .passwordParameter("password")
 
-                // Todos los usuarios van al mismo inicio
                 .successHandler((request, response, authentication) -> {
                     response.sendRedirect(
                         request.getContextPath() + "/"
@@ -99,3 +108,4 @@ public class SecurityConfig {
         return http.build();
     }
 }
+
