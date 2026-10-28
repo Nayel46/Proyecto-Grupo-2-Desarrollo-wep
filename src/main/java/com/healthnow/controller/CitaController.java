@@ -1,3 +1,4 @@
+
 package com.healthnow.controller;
 
 import com.healthnow.domain.Cita;
@@ -55,13 +56,15 @@ public class CitaController {
     public String formularioAgendar(Model model) {
 
         model.addAttribute("cita", new Cita());
+
         model.addAttribute("doctores",
                 usuarioRepository
                         .findByRolAndActivoTrueOrderByNombreAscApellidosAsc(
                                 "DOCTOR"));
+
         model.addAttribute("modoEdicion", false);
 
-        return "cita/formulario";
+        return "cita/modifica";
     }
 
     @PostMapping("/guardar")
@@ -131,13 +134,15 @@ public class CitaController {
             }
 
             model.addAttribute("cita", cita);
+
             model.addAttribute("doctores",
                     usuarioRepository
                             .findByRolAndActivoTrueOrderByNombreAscApellidosAsc(
                                     "DOCTOR"));
+
             model.addAttribute("modoEdicion", true);
 
-            return "cita/formulario";
+            return "cita/modifica";
 
         } catch (IllegalArgumentException ex) {
 
@@ -199,7 +204,10 @@ public class CitaController {
         Usuario paciente = obtenerUsuarioActual(principal);
 
         try {
-            citaService.cancelar(idCita, paciente.getIdUsuario());
+            citaService.cancelar(
+                    idCita,
+                    paciente.getIdUsuario()
+            );
 
             redirectAttributes.addFlashAttribute(
                     "mensaje", "Cita cancelada correctamente.");
