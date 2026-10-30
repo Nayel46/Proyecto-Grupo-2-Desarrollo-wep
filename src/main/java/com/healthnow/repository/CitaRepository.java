@@ -1,3 +1,4 @@
+
 package com.healthnow.repository;
 
 import com.healthnow.domain.Cita;
@@ -28,6 +29,13 @@ public interface CitaRepository extends JpaRepository<Cita, Integer> {
             String estado
     );
 
+    // CITAS PENDIENTES DE UN DOCTOR
+
+    List<Cita> findByDoctor_IdUsuarioAndEstadoOrderByFechaAscHoraAsc(
+            Integer idDoctor,
+            String estado
+    );
+
     boolean existsByDoctor_IdUsuarioAndFechaAndHoraAndEstadoNot(
             Integer idDoctor,
             LocalDate fecha,
@@ -46,5 +54,5 @@ public interface CitaRepository extends JpaRepository<Cita, Integer> {
     List<Cita> findByEstadoOrderByFechaAscHoraAsc(
             String estado
     );
-
 }
+

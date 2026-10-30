@@ -18,56 +18,90 @@ public class CitaService {
     private final CitaRepository citaRepository;
     private final UsuarioRepository usuarioRepository;
 
-    public CitaService(CitaRepository citaRepository,
-                       UsuarioRepository usuarioRepository) {
+    public CitaService(
+            CitaRepository citaRepository,
+            UsuarioRepository usuarioRepository) {
+
         this.citaRepository = citaRepository;
         this.usuarioRepository = usuarioRepository;
     }
 
+    // CITAS DEL PACIENTE
+
     @Transactional(readOnly = true)
     public List<Cita> listarPorPaciente(Integer idPaciente) {
+
         return citaRepository
-                .findByPaciente_IdUsuarioOrderByFechaDescHoraDesc(idPaciente);
+                .findByPaciente_IdUsuarioOrderByFechaDescHoraDesc(
+                        idPaciente);
     }
+
+    // TODAS LAS CITAS DEL DOCTOR
 
     @Transactional(readOnly = true)
     public List<Cita> listarPorDoctor(Integer idDoctor) {
+
         return citaRepository
-                .findByDoctor_IdUsuarioOrderByFechaAscHoraAsc(idDoctor);
+                .findByDoctor_IdUsuarioOrderByFechaAscHoraAsc(
+                        idDoctor);
     }
 
+    // CITAS DEL DÍA DEL DOCTOR
+
     @Transactional(readOnly = true)
-    public List<Cita> listarPorDoctorYFecha(Integer idDoctor,
-                                            LocalDate fecha) {
+    public List<Cita> listarPorDoctorYFecha(
+            Integer idDoctor,
+            LocalDate fecha) {
+
         return citaRepository
                 .findByDoctor_IdUsuarioAndFechaOrderByHoraAsc(
                         idDoctor, fecha);
     }
 
+    // CITAS PENDIENTES DEL DOCTOR
+
+    @Transactional(readOnly = true)
+    public List<Cita> listarPendientesPorDoctor(Integer idDoctor) {
+
+        return citaRepository
+                .findByDoctor_IdUsuarioAndEstadoOrderByFechaAscHoraAsc(
+                        idDoctor, "PENDIENTE");
+    }
+
+    // BUSCAR CITA POR ID
+
     @Transactional(readOnly = true)
     public Cita buscarPorId(Integer idCita) {
+
         return citaRepository.findById(idCita)
                 .orElseThrow(() ->
                         new IllegalArgumentException(
                                 "La cita no existe."));
     }
 
+    // VERIFICAR DISPONIBILIDAD
+
     @Transactional(readOnly = true)
-    public boolean horarioDisponible(Integer idDoctor,
-                                     LocalDate fecha,
-                                     LocalTime hora) {
+    public boolean horarioDisponible(
+            Integer idDoctor,
+            LocalDate fecha,
+            LocalTime hora) {
+
         return !citaRepository
                 .existsByDoctor_IdUsuarioAndFechaAndHoraAndEstadoNot(
                         idDoctor, fecha, hora, "CANCELADA");
     }
 
+    // AGENDAR CITA
+
     @Transactional
-    public Cita agendar(Integer idPaciente,
-                        Integer idDoctor,
-                        LocalDate fecha,
-                        LocalTime hora,
-                        String motivo,
-                        String modalidad) {
+    public Cita agendar(
+            Integer idPaciente,
+            Integer idDoctor,
+            LocalDate fecha,
+            LocalTime hora,
+            String motivo,
+            String modalidad) {
 
         Usuario paciente = obtenerUsuario(idPaciente);
         Usuario doctor = obtenerUsuario(idDoctor);
@@ -84,6 +118,7 @@ public class CitaService {
         }
 
         Cita cita = new Cita();
+
         cita.setPaciente(paciente);
         cita.setDoctor(doctor);
         cita.setFecha(fecha);
@@ -95,14 +130,17 @@ public class CitaService {
         return citaRepository.save(cita);
     }
 
+    // EDITAR CITA
+
     @Transactional
-    public Cita editar(Integer idCita,
-                       Integer idPaciente,
-                       Integer idDoctor,
-                       LocalDate fecha,
-                       LocalTime hora,
-                       String motivo,
-                       String modalidad) {
+    public Cita editar(
+            Integer idCita,
+            Integer idPaciente,
+            Integer idDoctor,
+            LocalDate fecha,
+            LocalTime hora,
+            String motivo,
+            String modalidad) {
 
         Cita cita = buscarPorId(idCita);
 
@@ -134,6 +172,8 @@ public class CitaService {
         return citaRepository.save(cita);
     }
 
+    // CANCELAR CITA
+
     @Transactional
     public void cancelar(Integer idCita, Integer idPaciente) {
 
@@ -143,32 +183,68 @@ public class CitaService {
         validarEstadoEditable(cita);
 
         cita.setEstado("CANCELADA");
+
         citaRepository.save(cita);
     }
 
+    // CONFIRMAR CITA COMO DOCTOR
+
+    @Transactional
+    public void confirmarCita(Integer idCita, Integer idDoctor) {
+
+        Usuario doctor = obtenerUsuario(idDoctor);
+        validarRol(doctor, "DOCTOR");
+
+        Cita cita = buscarPorId(idCita);
+
+        if (!cita.getDoctor().getIdUsuario().equals(idDoctor)) {
+            throw new IllegalArgumentException(
+                    "No tiene permiso para confirmar esta cita.");
+        }
+
+        if (!"PENDIENTE".equalsIgnoreCase(cita.getEstado())) {
+            throw new IllegalArgumentException(
+                    "Solo se pueden confirmar citas pendientes.");
+        }
+
+        cita.setEstado("CONFIRMADA");
+
+        citaRepository.save(cita);
+    }
+
+    // OBTENER USUARIO
+
     private Usuario obtenerUsuario(Integer idUsuario) {
+
         return usuarioRepository.findById(idUsuario)
                 .orElseThrow(() ->
                         new IllegalArgumentException(
                                 "El usuario no existe."));
     }
 
+    // VALIDAR ROL
+
     private void validarRol(Usuario usuario, String rol) {
 
         if (usuario.getRol() == null
-                || !rol.equalsIgnoreCase(
-                        usuario.getRol().toString())) {
+                || !rol.equalsIgnoreCase(usuario.getRol().toString())) {
+
             throw new IllegalArgumentException(
                     "El usuario no tiene el rol requerido: " + rol);
         }
 
         if (!Boolean.TRUE.equals(usuario.isActivo())) {
+
             throw new IllegalArgumentException(
                     "El usuario está inactivo.");
         }
     }
 
-    private void validarFechaHora(LocalDate fecha, LocalTime hora) {
+    // VALIDAR FECHA Y HORA
+
+    private void validarFechaHora(
+            LocalDate fecha,
+            LocalTime hora) {
 
         if (fecha == null || hora == null) {
             throw new IllegalArgumentException(
@@ -177,48 +253,63 @@ public class CitaService {
 
         if (!LocalDateTime.of(fecha, hora)
                 .isAfter(LocalDateTime.now())) {
+
             throw new IllegalArgumentException(
                     "La fecha y hora deben ser futuras.");
         }
     }
 
+    // VALIDAR MOTIVO
+
     private void validarMotivo(String motivo) {
 
         if (motivo == null || motivo.isBlank()) {
+
             throw new IllegalArgumentException(
                     "Debe ingresar el motivo de la cita.");
         }
 
         if (motivo.length() > 500) {
+
             throw new IllegalArgumentException(
                     "El motivo no puede superar 500 caracteres.");
         }
     }
+
+    // VALIDAR MODALIDAD
 
     private void validarModalidad(String modalidad) {
 
         if (modalidad == null
                 || (!modalidad.trim().equalsIgnoreCase("PRESENCIAL")
                 && !modalidad.trim().equalsIgnoreCase("VIRTUAL"))) {
+
             throw new IllegalArgumentException(
                     "Seleccione una modalidad válida.");
         }
     }
 
-    private void validarPropietario(Cita cita, Integer idPaciente) {
+    // VALIDAR PROPIETARIO DE LA CITA
+
+    private void validarPropietario(
+            Cita cita,
+            Integer idPaciente) {
 
         if (idPaciente == null
-                || !cita.getPaciente().getIdUsuario()
-                        .equals(idPaciente)) {
+                || !cita.getPaciente().getIdUsuario().equals(idPaciente)) {
+
             throw new IllegalArgumentException(
                     "No tiene permiso para modificar esta cita.");
         }
     }
 
+    // VALIDAR ESTADO EDITABLE
+
     private void validarEstadoEditable(Cita cita) {
 
         if ("CANCELADA".equalsIgnoreCase(cita.getEstado())
                 || "ATENDIDA".equalsIgnoreCase(cita.getEstado())) {
+
             throw new IllegalArgumentException(
                     "Esta cita ya no puede modificarse.");
         }

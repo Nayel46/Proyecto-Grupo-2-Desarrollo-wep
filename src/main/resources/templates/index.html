@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="es"
       xmlns:th="http://www.thymeleaf.org"
@@ -65,10 +64,8 @@
             align-items: center;
             gap: 12px;
             color: white;
-            cursor: pointer;
             padding: 4px 8px;
             border-radius: 8px;
-            transition: background .2s ease;
         }
 
         .enlace-perfil:hover {
@@ -201,6 +198,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: .2s;
+            white-space: nowrap;
         }
 
         .btn:hover {
@@ -215,11 +213,6 @@
 
         .btn-verde:hover {
             background: #3fd976;
-        }
-
-        .btn-secundario {
-            background: var(--azul-suave);
-            color: var(--azul-oscuro);
         }
 
         .acciones-admin {
@@ -247,8 +240,8 @@
             background: var(--azul-suave);
             color: var(--azul-oscuro);
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             font-size: 26px;
             flex-shrink: 0;
         }
@@ -295,7 +288,6 @@
         a.especialidad-card:hover {
             border-color: var(--azul-claro);
             transform: translateY(-4px);
-            box-shadow: 0 10px 25px rgba(0,120,170,.13);
         }
 
         .especialidad-icono {
@@ -369,7 +361,6 @@
         .campo select:disabled {
             background: #f0f3f6;
             color: #81909c;
-            cursor: not-allowed;
         }
 
         .buscador-grid .btn {
@@ -407,11 +398,13 @@
             text-align: left;
             padding: 14px 12px;
             border-bottom: 2px solid #cde7f4;
+            white-space: nowrap;
         }
 
         .tabla-citas td {
             padding: 16px 12px;
             border-bottom: 1px solid var(--borde);
+            vertical-align: middle;
         }
 
         .tabla-vacia {
@@ -424,6 +417,64 @@
             margin-top: 20px;
             display: flex;
             justify-content: flex-end;
+        }
+
+        .estado {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .estado-pendiente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .estado-confirmada {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .estado-cancelada {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .estado-atendida {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .btn-confirmar {
+            background: var(--verde);
+            color: #16462b;
+            border: none;
+            border-radius: 20px;
+            padding: 9px 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-confirmar:hover {
+            background: #3fd976;
+        }
+
+        .mensaje-exito {
+            padding: 15px 20px;
+            background: #d1e7dd;
+            color: #0f5132;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .mensaje-error {
+            padding: 15px 20px;
+            background: #f8d7da;
+            color: #842029;
+            border-radius: 12px;
+            margin-bottom: 20px;
         }
 
         .informacion {
@@ -538,10 +589,6 @@
                 grid-template-columns: 1fr;
             }
 
-            .acciones-admin {
-                grid-template-columns: 1fr;
-            }
-
             .accion-admin {
                 flex-direction: column;
                 text-align: center;
@@ -571,6 +618,8 @@
 </head>
 
 <body>
+
+    <!-- BARRA SUPERIOR -->
 
     <div class="barra-superior">
 
@@ -604,29 +653,26 @@
                     </span>
 
                 </div>
-
             </a>
 
             <form th:action="@{/logout}" method="post">
-
                 <button type="submit" class="btn-salir">
                     Salir
                 </button>
-
             </form>
 
         </div>
 
         <div sec:authorize="isAnonymous()">
-
             <a th:href="@{/login}"
                style="color:white;font-size:13px;">
                 Iniciar sesión
             </a>
-
         </div>
 
     </div>
+
+    <!-- NAVEGACIÓN -->
 
     <header class="nav-principal">
 
@@ -679,6 +725,8 @@
     </header>
 
     <main class="contenido">
+
+        <!-- PANEL ADMINISTRADOR -->
 
         <section sec:authorize="hasRole('ADMIN')">
 
@@ -747,6 +795,8 @@
 
         </section>
 
+        <!-- PANEL PACIENTE -->
+
         <section sec:authorize="hasRole('PACIENTE')">
 
             <div class="encabezado-seccion">
@@ -799,11 +849,9 @@
                         </label>
 
                         <select id="tipo" disabled>
-
                             <option value="">
                                 Próximamente
                             </option>
-
                         </select>
 
                     </div>
@@ -880,6 +928,8 @@
 
         </section>
 
+        <!-- ESPECIALIDADES ADMIN Y PACIENTE -->
+
         <section sec:authorize="hasAnyRole('ADMIN','PACIENTE')">
 
             <h2 class="titulo-bloque">
@@ -929,6 +979,8 @@
 
         </section>
 
+        <!-- PANEL MÉDICO -->
+
         <section sec:authorize="hasRole('DOCTOR')">
 
             <div class="encabezado-seccion">
@@ -942,9 +994,26 @@
 
             </div>
 
+            <!-- MENSAJES -->
+
+            <div class="mensaje-exito"
+                 th:if="${mensaje}"
+                 th:text="${mensaje}">
+            </div>
+
+            <div class="mensaje-error"
+                 th:if="${error}"
+                 th:text="${error}">
+            </div>
+
+            <!-- CITAS DEL DÍA -->
+
             <div class="panel-tabla">
 
-                <h2>Citas del día</h2>
+                <h2>
+                    Citas del día
+                    (<span th:text="${totalCitasDelDia ?: 0}">0</span>)
+                </h2>
 
                 <div class="tabla-scroll">
 
@@ -952,24 +1021,82 @@
 
                         <thead>
                             <tr>
-                                <th>Horario</th>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Especialidad</th>
+                                <th>Doctor</th>
+                                <th>Modalidad</th>
                                 <th>Nombre Paciente</th>
                                 <th>Cédula</th>
                                 <th>Correo Electrónico</th>
-                                <th>Comentarios</th>
-                                <th>Especialidad</th>
+                                <th>Motivo</th>
                                 <th>Estado</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            <tr>
-                                <td colspan="7"
-                                    class="tabla-vacia">
-                                    Consulta las citas del día
-                                    desde tu agenda médica.
+
+                            <tr th:each="cita : ${citasDelDia}">
+
+                                <td th:text="${cita.fecha}">
+                                    Fecha
                                 </td>
+
+                                <td th:text="${cita.hora}">
+                                    Hora
+                                </td>
+
+                                <td th:text="${especialidadDoctor != null ? especialidadDoctor : 'Sin especialidad'}">
+                                    Especialidad
+                                </td>
+
+                                <td th:text="${cita.doctor.nombre + ' ' + cita.doctor.apellidos}">
+                                    Doctor
+                                </td>
+
+                                <td th:text="${cita.modalidad}">
+                                    Modalidad
+                                </td>
+
+                                <td th:text="${cita.paciente.nombre + ' ' + cita.paciente.apellidos}">
+                                    Paciente
+                                </td>
+
+                                <td th:text="${cita.paciente.cedula}">
+                                    Cédula
+                                </td>
+
+                                <td th:text="${cita.paciente.correo}">
+                                    Correo
+                                </td>
+
+                                <td th:text="${cita.motivo}">
+                                    Motivo
+                                </td>
+
+                                <td>
+                                    <span class="estado"
+                                          th:classappend="${cita.estado == 'PENDIENTE' ? ' estado-pendiente' :
+                                              (cita.estado == 'CONFIRMADA' ? ' estado-confirmada' :
+                                              (cita.estado == 'CANCELADA' ? ' estado-cancelada' : ' estado-atendida'))}"
+                                          th:text="${cita.estado}">
+                                        Estado
+                                    </span>
+                                </td>
+
                             </tr>
+
+                            <tr th:if="${citasDelDia == null or #lists.isEmpty(citasDelDia)}">
+
+                                <td colspan="10"
+                                    class="tabla-vacia">
+
+                                    No tienes citas programadas para hoy.
+
+                                </td>
+
+                            </tr>
+
                         </tbody>
 
                     </table>
@@ -987,9 +1114,14 @@
 
             </div>
 
+            <!-- CITAS PENDIENTES DE CONFIRMAR -->
+
             <div class="panel-tabla">
 
-                <h2>Citas Pendientes de Confirmar</h2>
+                <h2>
+                    Citas Pendientes de Confirmar
+                    (<span th:text="${totalCitasPendientes ?: 0}">0</span>)
+                </h2>
 
                 <div class="tabla-scroll">
 
@@ -997,24 +1129,97 @@
 
                         <thead>
                             <tr>
-                                <th>Horario</th>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Especialidad</th>
+                                <th>Doctor</th>
+                                <th>Modalidad</th>
                                 <th>Nombre Paciente</th>
                                 <th>Cédula</th>
                                 <th>Correo Electrónico</th>
-                                <th>Comentarios</th>
-                                <th>Especialidad</th>
+                                <th>Motivo</th>
                                 <th>Estado</th>
+                                <th>Acción</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            <tr>
-                                <td colspan="7"
-                                    class="tabla-vacia">
-                                    Consulta las citas pendientes
-                                    desde tu agenda médica.
+
+                            <tr th:each="cita : ${citasPendientes}">
+
+                                <td th:text="${cita.fecha}">
+                                    Fecha
                                 </td>
+
+                                <td th:text="${cita.hora}">
+                                    Hora
+                                </td>
+
+                                <td th:text="${especialidadDoctor != null ? especialidadDoctor : 'Sin especialidad'}">
+                                    Especialidad
+                                </td>
+
+                                <td th:text="${cita.doctor.nombre + ' ' + cita.doctor.apellidos}">
+                                    Doctor
+                                </td>
+
+                                <td th:text="${cita.modalidad}">
+                                    Modalidad
+                                </td>
+
+                                <td th:text="${cita.paciente.nombre + ' ' + cita.paciente.apellidos}">
+                                    Paciente
+                                </td>
+
+                                <td th:text="${cita.paciente.cedula}">
+                                    Cédula
+                                </td>
+
+                                <td th:text="${cita.paciente.correo}">
+                                    Correo
+                                </td>
+
+                                <td th:text="${cita.motivo}">
+                                    Motivo
+                                </td>
+
+                                <td>
+                                    <span class="estado estado-pendiente"
+                                          th:text="${cita.estado}">
+                                        PENDIENTE
+                                    </span>
+                                </td>
+
+                                <td>
+
+                                    <form th:action="@{/cita/confirmar/{idCita}(idCita=${cita.idCita})}"
+                                          method="post">
+
+                                        <button type="submit"
+                                                class="btn-confirmar"
+                                                onclick="return confirm('¿Deseas confirmar esta cita?');">
+
+                                            Confirmar
+
+                                        </button>
+
+                                    </form>
+
+                                </td>
+
                             </tr>
+
+                            <tr th:if="${citasPendientes == null or #lists.isEmpty(citasPendientes)}">
+
+                                <td colspan="11"
+                                    class="tabla-vacia">
+
+                                    No tienes citas pendientes de confirmar.
+
+                                </td>
+
+                            </tr>
+
                         </tbody>
 
                     </table>
@@ -1033,6 +1238,8 @@
             </div>
 
         </section>
+
+        <!-- INFORMACIÓN GENERAL -->
 
         <section sec:authorize="hasAnyRole('ADMIN','PACIENTE')">
 
@@ -1093,6 +1300,8 @@
 
         </section>
 
+        <!-- PÁGINA PARA VISITANTES -->
+
         <section class="visitante"
                  sec:authorize="isAnonymous()">
 
@@ -1123,6 +1332,8 @@
         </section>
 
     </main>
+
+    <!-- PIE DE PÁGINA -->
 
     <footer>
         &copy; 2026 HealthNow |
