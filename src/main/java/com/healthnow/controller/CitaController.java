@@ -1,13 +1,18 @@
 
+
+
 package com.healthnow.controller;
 
 import com.healthnow.domain.Cita;
 import com.healthnow.domain.Usuario;
+import com.healthnow.repository.EspecialidadRepository;
 import com.healthnow.repository.UsuarioRepository;
 import com.healthnow.service.CitaService;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.Map;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -25,12 +31,19 @@ public class CitaController {
 
     private final CitaService citaService;
     private final UsuarioRepository usuarioRepository;
+    private final EspecialidadRepository especialidadRepository;
 
-    public CitaController(CitaService citaService,
-                          UsuarioRepository usuarioRepository) {
+    public CitaController(
+            CitaService citaService,
+            UsuarioRepository usuarioRepository,
+            EspecialidadRepository especialidadRepository) {
+
         this.citaService = citaService;
         this.usuarioRepository = usuarioRepository;
+        this.especialidadRepository = especialidadRepository;
     }
+
+    // LISTAR CITAS DEL PACIENTE O MÉDICO
 
     @GetMapping("/listado")
     @PreAuthorize("hasAnyRole('PACIENTE', 'DOCTOR')")
@@ -39,9 +52,12 @@ public class CitaController {
         Usuario usuario = obtenerUsuarioActual(principal);
 
         if ("DOCTOR".equalsIgnoreCase(usuario.getRol())) {
+
             model.addAttribute("citas",
                     citaService.listarPorDoctor(usuario.getIdUsuario()));
+
         } else {
+
             model.addAttribute("citas",
                     citaService.listarPorPaciente(usuario.getIdUsuario()));
         }
@@ -51,25 +67,54 @@ public class CitaController {
         return "cita/listado";
     }
 
+    // MOSTRAR FORMULARIO PARA AGENDAR
+
     @GetMapping("/agendar")
     @PreAuthorize("hasRole('PACIENTE')")
-    public String formularioAgendar(Model model) {
+    public String formularioAgendar(
+            Model model,
+            Principal principal) {
+
+        Usuario paciente = obtenerUsuarioActual(principal);
 
         model.addAttribute("cita", new Cita());
+        model.addAttribute("paciente", paciente);
 
-        model.addAttribute("doctores",
-                usuarioRepository
-                        .findByRolAndActivoTrueOrderByNombreAscApellidosAsc(
-                                "DOCTOR"));
+        // Cargar especialidades desde MySQL
+        model.addAttribute("especialidades",
+                especialidadRepository.findAll());
 
+        model.addAttribute("doctores", List.of());
         model.addAttribute("modoEdicion", false);
 
         return "cita/modifica";
     }
 
+    // CONSULTAR DOCTORES SEGÚN ESPECIALIDAD
+
+    @GetMapping("/doctores")
+    @PreAuthorize("hasRole('PACIENTE')")
+    @ResponseBody
+    public List<Map<String, Object>> obtenerDoctores(
+            @RequestParam Integer idEspecialidad) {
+
+        return usuarioRepository
+                .buscarMedicosPorEspecialidad(idEspecialidad)
+                .stream()
+                .map(usuario -> Map.<String, Object>of(
+                        "idUsuario", usuario.getIdUsuario(),
+                        "nombreCompleto",
+                        usuario.getNombre() + " " + usuario.getApellidos()
+                ))
+                .toList();
+    }
+
+    // GUARDAR UNA CITA
+
     @PostMapping("/guardar")
     @PreAuthorize("hasRole('PACIENTE')")
     public String guardar(
+            @RequestParam Integer idEspecialidad,
             @RequestParam Integer idDoctor,
             @RequestParam
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -85,6 +130,9 @@ public class CitaController {
         Usuario paciente = obtenerUsuarioActual(principal);
 
         try {
+
+            validarEspecialidadDoctor(idEspecialidad, idDoctor);
+
             citaService.agendar(
                     paciente.getIdUsuario(),
                     idDoctor,
@@ -108,6 +156,8 @@ public class CitaController {
         }
     }
 
+    // MOSTRAR FORMULARIO PARA EDITAR
+
     @GetMapping("/editar/{idCita}")
     @PreAuthorize("hasRole('PACIENTE')")
     public String formularioEditar(
@@ -119,26 +169,46 @@ public class CitaController {
         Usuario paciente = obtenerUsuarioActual(principal);
 
         try {
+
             Cita cita = citaService.buscarPorId(idCita);
 
             if (!cita.getPaciente().getIdUsuario()
                     .equals(paciente.getIdUsuario())) {
+
                 throw new IllegalArgumentException(
                         "No tiene permiso para editar esta cita.");
             }
 
             if ("CANCELADA".equalsIgnoreCase(cita.getEstado())
                     || "ATENDIDA".equalsIgnoreCase(cita.getEstado())) {
+
                 throw new IllegalArgumentException(
                         "Esta cita ya no puede editarse.");
             }
 
+            Integer idEspecialidad =
+                    usuarioRepository.obtenerIdEspecialidadMedico(
+                            cita.getDoctor().getIdUsuario());
+
+            if (idEspecialidad == null) {
+
+                throw new IllegalArgumentException(
+                        "No se encontró la especialidad del doctor.");
+            }
+
             model.addAttribute("cita", cita);
+            model.addAttribute("paciente", paciente);
+
+            model.addAttribute("especialidades",
+                    especialidadRepository.findAll());
 
             model.addAttribute("doctores",
-                    usuarioRepository
-                            .findByRolAndActivoTrueOrderByNombreAscApellidosAsc(
-                                    "DOCTOR"));
+                    usuarioRepository.buscarMedicosPorEspecialidad(
+                            idEspecialidad));
+
+            model.addAttribute(
+                    "idEspecialidadSeleccionada",
+                    idEspecialidad);
 
             model.addAttribute("modoEdicion", true);
 
@@ -153,10 +223,13 @@ public class CitaController {
         }
     }
 
+    // ACTUALIZAR CITA
+
     @PostMapping("/actualizar/{idCita}")
     @PreAuthorize("hasRole('PACIENTE')")
     public String actualizar(
             @PathVariable Integer idCita,
+            @RequestParam Integer idEspecialidad,
             @RequestParam Integer idDoctor,
             @RequestParam
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -172,6 +245,9 @@ public class CitaController {
         Usuario paciente = obtenerUsuarioActual(principal);
 
         try {
+
+            validarEspecialidadDoctor(idEspecialidad, idDoctor);
+
             citaService.editar(
                     idCita,
                     paciente.getIdUsuario(),
@@ -194,6 +270,8 @@ public class CitaController {
         return "redirect:/cita/listado";
     }
 
+    // CANCELAR CITA
+
     @PostMapping("/cancelar/{idCita}")
     @PreAuthorize("hasRole('PACIENTE')")
     public String cancelar(
@@ -204,6 +282,7 @@ public class CitaController {
         Usuario paciente = obtenerUsuarioActual(principal);
 
         try {
+
             citaService.cancelar(
                     idCita,
                     paciente.getIdUsuario()
@@ -221,9 +300,49 @@ public class CitaController {
         return "redirect:/cita/listado";
     }
 
+    // VALIDAR ESPECIALIDAD Y DOCTOR
+
+    private void validarEspecialidadDoctor(
+            Integer idEspecialidad,
+            Integer idDoctor) {
+
+        Usuario doctor = usuarioRepository.findById(idDoctor)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "El doctor seleccionado no existe."));
+
+        if (!doctor.isActivo()
+                || !"DOCTOR".equalsIgnoreCase(doctor.getRol())) {
+
+            throw new IllegalArgumentException(
+                    "El doctor seleccionado no está disponible.");
+        }
+
+        Integer especialidadDoctor =
+                usuarioRepository.obtenerIdEspecialidadMedico(idDoctor);
+
+        if (especialidadDoctor == null
+                || !especialidadDoctor.equals(idEspecialidad)) {
+
+            throw new IllegalArgumentException(
+                    "El doctor no pertenece a la especialidad seleccionada.");
+        }
+
+        if (especialidadRepository.findById(idEspecialidad)
+                .filter(especialidad -> especialidad.isActivo())
+                .isEmpty()) {
+
+            throw new IllegalArgumentException(
+                    "La especialidad seleccionada no está disponible.");
+        }
+    }
+
+    // OBTENER USUARIO QUE INICIÓ SESIÓN
+
     private Usuario obtenerUsuarioActual(Principal principal) {
 
         if (principal == null) {
+
             throw new IllegalArgumentException(
                     "Debe iniciar sesión.");
         }
@@ -232,6 +351,7 @@ public class CitaController {
                 usuarioRepository.findByUsername(principal.getName());
 
         if (usuario == null) {
+
             throw new IllegalArgumentException(
                     "No se encontró el usuario autenticado.");
         }
@@ -239,3 +359,4 @@ public class CitaController {
         return usuario;
     }
 }
+
