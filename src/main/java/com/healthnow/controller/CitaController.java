@@ -1,6 +1,4 @@
 
-
-
 package com.healthnow.controller;
 
 import com.healthnow.domain.Cita;
@@ -43,8 +41,6 @@ public class CitaController {
         this.especialidadRepository = especialidadRepository;
     }
 
-    // LISTAR CITAS DEL PACIENTE O MÉDICO
-
     @GetMapping("/listado")
     @PreAuthorize("hasAnyRole('PACIENTE', 'DOCTOR')")
     public String listado(Model model, Principal principal) {
@@ -53,21 +49,23 @@ public class CitaController {
 
         if ("DOCTOR".equalsIgnoreCase(usuario.getRol())) {
 
-            model.addAttribute("citas",
-                    citaService.listarPorDoctor(usuario.getIdUsuario()));
+            model.addAttribute(
+                    "citas",
+                    citaService.listarPorDoctor(usuario.getIdUsuario())
+            );
 
         } else {
 
-            model.addAttribute("citas",
-                    citaService.listarPorPaciente(usuario.getIdUsuario()));
+            model.addAttribute(
+                    "citas",
+                    citaService.listarPorPaciente(usuario.getIdUsuario())
+            );
         }
 
         model.addAttribute("rolActual", usuario.getRol());
 
         return "cita/listado";
     }
-
-    // MOSTRAR FORMULARIO PARA AGENDAR
 
     @GetMapping("/agendar")
     @PreAuthorize("hasRole('PACIENTE')")
@@ -79,18 +77,15 @@ public class CitaController {
 
         model.addAttribute("cita", new Cita());
         model.addAttribute("paciente", paciente);
-
-        // Cargar especialidades desde MySQL
-        model.addAttribute("especialidades",
-                especialidadRepository.findAll());
-
+        model.addAttribute(
+                "especialidades",
+                especialidadRepository.findAll()
+        );
         model.addAttribute("doctores", List.of());
         model.addAttribute("modoEdicion", false);
 
         return "cita/modifica";
     }
-
-    // CONSULTAR DOCTORES SEGÚN ESPECIALIDAD
 
     @GetMapping("/doctores")
     @PreAuthorize("hasRole('PACIENTE')")
@@ -108,8 +103,6 @@ public class CitaController {
                 ))
                 .toList();
     }
-
-    // GUARDAR UNA CITA
 
     @PostMapping("/guardar")
     @PreAuthorize("hasRole('PACIENTE')")
@@ -143,20 +136,22 @@ public class CitaController {
             );
 
             redirectAttributes.addFlashAttribute(
-                    "mensaje", "Cita agendada correctamente.");
+                    "mensaje",
+                    "Cita agendada correctamente."
+            );
 
             return "redirect:/cita/listado";
 
         } catch (IllegalArgumentException ex) {
 
             redirectAttributes.addFlashAttribute(
-                    "error", ex.getMessage());
+                    "error",
+                    ex.getMessage()
+            );
 
             return "redirect:/cita/agendar";
         }
     }
-
-    // MOSTRAR FORMULARIO PARA EDITAR
 
     @GetMapping("/editar/{idCita}")
     @PreAuthorize("hasRole('PACIENTE')")
@@ -176,39 +171,49 @@ public class CitaController {
                     .equals(paciente.getIdUsuario())) {
 
                 throw new IllegalArgumentException(
-                        "No tiene permiso para editar esta cita.");
+                        "No tiene permiso para editar esta cita."
+                );
             }
 
             if ("CANCELADA".equalsIgnoreCase(cita.getEstado())
                     || "ATENDIDA".equalsIgnoreCase(cita.getEstado())) {
 
                 throw new IllegalArgumentException(
-                        "Esta cita ya no puede editarse.");
+                        "Esta cita ya no puede editarse."
+                );
             }
 
             Integer idEspecialidad =
                     usuarioRepository.obtenerIdEspecialidadMedico(
-                            cita.getDoctor().getIdUsuario());
+                            cita.getDoctor().getIdUsuario()
+                    );
 
             if (idEspecialidad == null) {
 
                 throw new IllegalArgumentException(
-                        "No se encontró la especialidad del doctor.");
+                        "No se encontró la especialidad del doctor."
+                );
             }
 
             model.addAttribute("cita", cita);
             model.addAttribute("paciente", paciente);
 
-            model.addAttribute("especialidades",
-                    especialidadRepository.findAll());
+            model.addAttribute(
+                    "especialidades",
+                    especialidadRepository.findAll()
+            );
 
-            model.addAttribute("doctores",
+            model.addAttribute(
+                    "doctores",
                     usuarioRepository.buscarMedicosPorEspecialidad(
-                            idEspecialidad));
+                            idEspecialidad
+                    )
+            );
 
             model.addAttribute(
                     "idEspecialidadSeleccionada",
-                    idEspecialidad);
+                    idEspecialidad
+            );
 
             model.addAttribute("modoEdicion", true);
 
@@ -217,13 +222,13 @@ public class CitaController {
         } catch (IllegalArgumentException ex) {
 
             redirectAttributes.addFlashAttribute(
-                    "error", ex.getMessage());
+                    "error",
+                    ex.getMessage()
+            );
 
             return "redirect:/cita/listado";
         }
     }
-
-    // ACTUALIZAR CITA
 
     @PostMapping("/actualizar/{idCita}")
     @PreAuthorize("hasRole('PACIENTE')")
@@ -259,18 +264,20 @@ public class CitaController {
             );
 
             redirectAttributes.addFlashAttribute(
-                    "mensaje", "Cita actualizada correctamente.");
+                    "mensaje",
+                    "Cita actualizada correctamente."
+            );
 
         } catch (IllegalArgumentException ex) {
 
             redirectAttributes.addFlashAttribute(
-                    "error", ex.getMessage());
+                    "error",
+                    ex.getMessage()
+            );
         }
 
         return "redirect:/cita/listado";
     }
-
-    // CANCELAR CITA
 
     @PostMapping("/cancelar/{idCita}")
     @PreAuthorize("hasRole('PACIENTE')")
@@ -289,18 +296,86 @@ public class CitaController {
             );
 
             redirectAttributes.addFlashAttribute(
-                    "mensaje", "Cita cancelada correctamente.");
+                    "mensaje",
+                    "Cita cancelada correctamente."
+            );
 
         } catch (IllegalArgumentException ex) {
 
             redirectAttributes.addFlashAttribute(
-                    "error", ex.getMessage());
+                    "error",
+                    ex.getMessage()
+            );
         }
 
         return "redirect:/cita/listado";
     }
 
-    // VALIDAR ESPECIALIDAD Y DOCTOR
+    @PostMapping("/confirmar/{idCita}")
+    @PreAuthorize("hasRole('DOCTOR')")
+    public String confirmarCita(
+            @PathVariable Integer idCita,
+            Principal principal,
+            RedirectAttributes redirectAttributes) {
+
+        Usuario doctor = obtenerUsuarioActual(principal);
+
+        try {
+
+            citaService.confirmarCita(
+                    idCita,
+                    doctor.getIdUsuario()
+            );
+
+            redirectAttributes.addFlashAttribute(
+                    "mensaje",
+                    "Cita confirmada correctamente."
+            );
+
+        } catch (IllegalArgumentException ex) {
+
+            redirectAttributes.addFlashAttribute(
+                    "error",
+                    ex.getMessage()
+            );
+        }
+
+        return "redirect:/";
+    }
+
+    @PostMapping("/cambiar-estado/{idCita}")
+    @PreAuthorize("hasRole('DOCTOR')")
+    public String cambiarEstadoCita(
+            @PathVariable Integer idCita,
+            @RequestParam String nuevoEstado,
+            Principal principal,
+            RedirectAttributes redirectAttributes) {
+
+        Usuario doctor = obtenerUsuarioActual(principal);
+
+        try {
+
+            citaService.cambiarEstadoCita(
+                    idCita,
+                    doctor.getIdUsuario(),
+                    nuevoEstado
+            );
+
+            redirectAttributes.addFlashAttribute(
+                    "mensaje",
+                    "El estado de la cita se actualizó correctamente."
+            );
+
+        } catch (IllegalArgumentException ex) {
+
+            redirectAttributes.addFlashAttribute(
+                    "error",
+                    ex.getMessage()
+            );
+        }
+
+        return "redirect:/";
+    }
 
     private void validarEspecialidadDoctor(
             Integer idEspecialidad,
@@ -309,13 +384,16 @@ public class CitaController {
         Usuario doctor = usuarioRepository.findById(idDoctor)
                 .orElseThrow(() ->
                         new IllegalArgumentException(
-                                "El doctor seleccionado no existe."));
+                                "El doctor seleccionado no existe."
+                        )
+                );
 
         if (!doctor.isActivo()
                 || !"DOCTOR".equalsIgnoreCase(doctor.getRol())) {
 
             throw new IllegalArgumentException(
-                    "El doctor seleccionado no está disponible.");
+                    "El doctor seleccionado no está disponible."
+            );
         }
 
         Integer especialidadDoctor =
@@ -325,7 +403,8 @@ public class CitaController {
                 || !especialidadDoctor.equals(idEspecialidad)) {
 
             throw new IllegalArgumentException(
-                    "El doctor no pertenece a la especialidad seleccionada.");
+                    "El doctor no pertenece a la especialidad seleccionada."
+            );
         }
 
         if (especialidadRepository.findById(idEspecialidad)
@@ -333,18 +412,18 @@ public class CitaController {
                 .isEmpty()) {
 
             throw new IllegalArgumentException(
-                    "La especialidad seleccionada no está disponible.");
+                    "La especialidad seleccionada no está disponible."
+            );
         }
     }
-
-    // OBTENER USUARIO QUE INICIÓ SESIÓN
 
     private Usuario obtenerUsuarioActual(Principal principal) {
 
         if (principal == null) {
 
             throw new IllegalArgumentException(
-                    "Debe iniciar sesión.");
+                    "Debe iniciar sesión."
+            );
         }
 
         Usuario usuario =
@@ -353,10 +432,10 @@ public class CitaController {
         if (usuario == null) {
 
             throw new IllegalArgumentException(
-                    "No se encontró el usuario autenticado.");
+                    "No se encontró el usuario autenticado."
+            );
         }
 
         return usuario;
     }
 }
-
