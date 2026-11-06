@@ -10,7 +10,6 @@
 
 <body>
 
-    <!-- INFORMACIÓN PERSONAL -->
     <section th:fragment="informacionPersonal"
              class="informacion-personal">
 
@@ -22,7 +21,6 @@
 
         <div class="contenedor-datos">
 
-            <!-- ESPECIALIDAD: SOLO DOCTOR -->
             <div class="tarjeta-dato"
                  sec:authorize="hasRole('DOCTOR')">
 
@@ -41,7 +39,6 @@
 
             </div>
 
-            <!-- NOMBRE COMPLETO -->
             <div class="tarjeta-dato">
 
                 <div class="encabezado-dato">
@@ -57,7 +54,6 @@
 
             </div>
 
-            <!-- CÉDULA -->
             <div class="tarjeta-dato">
 
                 <div class="encabezado-dato">
@@ -73,7 +69,6 @@
 
             </div>
 
-            <!-- GÉNERO -->
             <div class="tarjeta-dato">
 
                 <div class="encabezado-dato">
@@ -83,12 +78,10 @@
                     </span>
                 </div>
 
-                <!-- PENDIENTE DE AGREGAR A MYSQL -->
                 <p>No especificado</p>
 
             </div>
 
-            <!-- CORREO ELECTRÓNICO -->
             <div class="tarjeta-dato">
 
                 <div class="encabezado-dato">
@@ -104,7 +97,6 @@
 
             </div>
 
-            <!-- NÚMERO DE TELÉFONO -->
             <div class="tarjeta-dato">
 
                 <div class="encabezado-dato">
@@ -125,7 +117,6 @@
 
         </div>
 
-        <!-- CERRAR SESIÓN -->
         <div class="contenedor-cerrar-sesion">
 
             <form th:action="@{/logout}" method="post">
@@ -139,7 +130,6 @@
 
         </div>
 
-        <!-- VOLVER -->
         <div class="contenedor-volver">
 
             <a th:href="@{/}"
