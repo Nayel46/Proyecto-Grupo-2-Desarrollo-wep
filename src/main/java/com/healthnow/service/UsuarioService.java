@@ -145,7 +145,25 @@ public class UsuarioService {
                 idUsuario
         );
     }
+    
+    @Transactional
+    public void actualizarEspecialidadMedico(Integer idUsuario, Integer idEspecialidad){
+    
+        Usuario usuario = obtenerUsuarioAdministrable(idUsuario);
 
+        if(!"DOCTOR".equals(usuario.getRol())){
+            throw new IllegalArgumentException("El usuario seleccionado no es médico.");
+            }
+
+        validarEspecialidad(idEspecialidad);
+
+        int actualizados = usuarioRepository.actualizarSoloEspecialidadMedico(idUsuario, idEspecialidad);
+
+        if(actualizados == 0){
+            throw new IllegalArgumentException("No se pudo actualizar la especialidad del médico");
+            }
+
+    }
     @Transactional(readOnly = true)
     public List<Especialidad> getEspecialidadesActivas() {
 

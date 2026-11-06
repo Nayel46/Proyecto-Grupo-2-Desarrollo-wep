@@ -282,7 +282,7 @@
 
                 <div class="encabezado-administracion">
                     <h2 class="titulo-tabla">Pacientes</h2>
-                    <span class="boton-agregar">Agregar Paciente</span>
+                    <a th:href="@{/admin/usuarios/nuevo-paciente }" class="boton-agregar">Agregar Paciente</a>
                 </div>
 
                 <div class="tabla-responsive">
@@ -305,7 +305,7 @@
                                 <td th:text="${paciente.telefono != null ? paciente.telefono : 'No registrado'}"></td>
                                 <td>
                                     <div class="acciones-tabla">
-                                        <span class="boton-editar">Editar</span>
+                                        <a th:href="@{/admin/usuarios/{id}/editar(id=${paciente.idUsuario})}" class='boton-editar'> Editar</a>
                                         <span class="boton-desactivar">Desactivar</span>
                                     </div>
                                 </td>
@@ -326,7 +326,7 @@
 
                 <div class="encabezado-administracion">
                     <h2 class="titulo-tabla">Médicos</h2>
-                    <span class="boton-agregar">Agregar Médico</span>
+                    <a th:href="@{/admin/usuarios/nuevo-doctor }" class="boton-agregar">Agregar Médico</a>
                 </div>
 
                 <div class="tabla-responsive">
@@ -336,8 +336,10 @@
                                 <th>Nombre Completo</th>
                                 <th>Cédula</th>
                                 <th>Correo Electrónico</th>
+                                <th>Especialidad</th>
                                 <th>Teléfono</th>
                                 <th>Acciones</th>
+                                
                             </tr>
                         </thead>
 
@@ -346,17 +348,18 @@
                                 <td th:text="${medico.nombre + ' ' + medico.apellidos}"></td>
                                 <td th:text="${medico.cedula}"></td>
                                 <td th:text="${medico.correo}"></td>
+                                <td th:text="${@usuarioService.obtenerEspecialidadDoctor(medico.idUsuario) ?: 'No asignada'}"></td>
                                 <td th:text="${medico.telefono != null ? medico.telefono : 'No registrado'}"></td>
                                 <td>
                                     <div class="acciones-tabla">
-                                        <span class="boton-editar">Editar</span>
+                                        <a th:href="@{/admin/usuarios/{id}/editar(id=${medico.idUsuario})}" class='boton-editar'> Editar</a>
                                         <span class="boton-desactivar">Desactivar</span>
                                     </div>
                                 </td>
                             </tr>
 
                             <tr th:if="${#lists.isEmpty(medicos)}">
-                                <td colspan="5" class="sin-registros">
+                                <td colspan="6" class="sin-registros">
                                     No hay médicos registrados.
                                 </td>
                             </tr>

@@ -86,16 +86,19 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     );
 
     @Modifying
-    @Query(value = """
-        UPDATE medico
-        SET id_especialidad = :idEspecialidad,
-            descripcion = :descripcion
-        WHERE id_usuario = :idUsuario
-        """, nativeQuery = true)
+    @Query(value = "UPDATE medico SET id_especialidad = :idEspecialidad,descripcion = :descripcion WHERE id_usuario = :idUsuario",
+            nativeQuery = true)
     public int modificarEspecialidadMedico(
             @Param("idUsuario") Integer idUsuario,
             @Param("idEspecialidad") Integer idEspecialidad,
             @Param("descripcion") String descripcion
     );
+    
+    @Modifying
+    @Query(value = "UPDATE medico SET id_especialidad = :idEspecialidad WHERE id_usuario = :idUsuario", nativeQuery = true)
+    int actualizarSoloEspecialidadMedico(
+            @Param("idUsuario") Integer idUsuario,
+            @Param("idEspecialidad") Integer idEspecialidad);
+    
 
 }

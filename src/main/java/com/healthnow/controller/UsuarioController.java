@@ -11,8 +11,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class UsuarioController {
@@ -209,7 +211,241 @@ public class UsuarioController {
             return "usuario/modifica";
         }
     }
+    
+    @GetMapping("/admin/usuarios/{id}/editar")
+    public String mostrarEditarUsuario(
+            @PathVariable Integer id,
+            Authentication authentication,
+            Model model) {
 
+        if (authentication == null
+                || !authentication.isAuthenticated()) {
+            return "redirect:/login";
+        }
+
+        Usuario administrador =
+                usuarioService.getUsuarioPorUsername(
+                        authentication.getName()
+                );
+
+        if (administrador == null
+                || !"ADMIN".equalsIgnoreCase(administrador.getRol())) {
+            return "redirect:/perfil";
+        }
+
+        Usuario usuario = usuarioService.getUsuario(id).orElse(null);
+
+        if (usuario == null
+                || (!"PACIENTE".equalsIgnoreCase(usuario.getRol())
+                && !"DOCTOR".equalsIgnoreCase(usuario.getRol()))) {
+            return "redirect:/admin/usuarios";
+        }
+
+        model.addAttribute("usuario", usuario);
+        
+        if("DOCTOR".equalsIgnoreCase(usuario.getRol())){
+            model.addAttribute("especialidades", usuarioService.getEspecialidadesActivas());
+            model.addAttribute("idEspecialidad", usuarioService.obtenerIdEspecialidadMedico(id));
+        }
+        return "usuario/editar";
+    }
+
+    @PostMapping("/admin/usuarios/{id}/editar")
+    public String guardarEdicionUsuario(
+            @PathVariable Integer id,
+            @ModelAttribute("usuario") Usuario datosActualizados,
+            @RequestParam(required = false) Integer idEspecialidad,
+            Authentication authentication,Model model, RedirectAttributes redirectAttributes) {
+
+        if (authentication == null
+                || !authentication.isAuthenticated()) {
+            return "redirect:/login";
+        }
+
+        Usuario administrador =
+                usuarioService.getUsuarioPorUsername(
+                        authentication.getName()
+                );
+
+        if (administrador == null
+                || !"ADMIN".equalsIgnoreCase(administrador.getRol())) {
+            return "redirect:/perfil";
+        }
+
+        try {
+            Usuario usuarioOriginal = usuarioService.getUsuario(id).orElse(null);
+            
+         if(usuarioOriginal == null){
+             return "redirect:/admin/usuarios";
+         }
+         
+         usuarioService.modificarUsuarioAdministracion(id, datosActualizados);
+         
+         if("DOCTOR".equalsIgnoreCase(usuarioOriginal.getRol())){
+             usuarioService.actualizarEspecialidadMedico(id, idEspecialidad);
+            }
+            
+         redirectAttributes.addFlashAttribute("mensaje", "El usuario se modifico corrrectamente.");
+         
+         return "redirect:/admin/usuarios";
+        } catch (DataIntegrityViolationException e){
+            datosActualizados.setIdUsuario(id); 
+            model.addAttribute("usuario", datosActualizados);
+            model.addAttribute("error", "El correo electrónico ya esta registrado.");
+            
+            cargarDatosEdicion(id, datosActualizados, model);
+            
+            return "usuario/editar";
+        }
+    }
+
+    @GetMapping("/admin/usuarios/nuevo-paciente")
+    public String mostrarFormularioPaciente(Authentication authentication, Model model){
+    
+        if(authentication == null || !authentication.isAuthenticated()){
+            return "redirect:/login";
+        }
+        
+        Usuario administrador = usuarioService.getUsuarioPorUsername(authentication.getName());
+        
+        if(administrador == null || !"ADMIN".equalsIgnoreCase(administrador.getRol())){
+            return "redirect:/perfil";
+        }
+        model.addAttribute("usuario", new Usuario());
+        
+        return "usuario/agregar-paciente";
+    }
+    
+    @PostMapping("/admin/usuarios/nuevo-paciente")
+    public String guardarNuevoPaciente(
+        @ModelAttribute("usuario") Usuario usuario,
+        Authentication authentication,
+        Model model,
+        RedirectAttributes redirectAttributes) {
+
+        if (authentication == null
+                || !authentication.isAuthenticated()) {
+            return "redirect:/login";
+        }
+
+        Usuario administrador =
+                usuarioService.getUsuarioPorUsername(
+                        authentication.getName()
+                );
+
+        if (administrador == null
+                || !"ADMIN".equalsIgnoreCase(administrador.getRol())) {
+            return "redirect:/perfil";
+        }
+
+        try {
+
+            usuarioService.registrarUsuarioAdministracion(
+                    usuario,
+                    "PACIENTE",
+                    null,
+                    null
+            );
+
+            redirectAttributes.addFlashAttribute(
+                    "mensaje",
+                    "El paciente se registró correctamente."
+            );
+
+            return "redirect:/admin/usuarios";
+
+        } catch (IllegalArgumentException
+                | DataIntegrityViolationException e) {
+
+            model.addAttribute("error", e.getMessage());
+            return "usuario/agregar-paciente";
+        }
+    }
+    
+    @GetMapping("/admin/usuarios/nuevo-doctor")
+    public String mostrarFormularioDoctor(
+            Authentication authentication,
+            Model model) {
+
+        if (authentication == null
+                || !authentication.isAuthenticated()) {
+            return "redirect:/login";
+        }
+
+        Usuario administrador =
+                usuarioService.getUsuarioPorUsername(
+                        authentication.getName()
+                );
+
+        if (administrador == null
+                || !"ADMIN".equalsIgnoreCase(administrador.getRol())) {
+            return "redirect:/perfil";
+        }
+
+        model.addAttribute("usuario", new Usuario());
+
+        model.addAttribute(
+                "especialidades",
+                usuarioService.getEspecialidadesActivas()
+        );
+
+        return "usuario/agregar-doctor";
+    }
+    
+    @PostMapping("/admin/usuarios/nuevo-doctor")
+    public String guardarNuevoDoctor(
+            @ModelAttribute("usuario") Usuario usuario,
+            @RequestParam Integer idEspecialidad,
+            @RequestParam(required = false) String descripcion,
+            Authentication authentication,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        if (authentication == null
+                || !authentication.isAuthenticated()) {
+            return "redirect:/login";
+        }
+
+        Usuario administrador =
+                usuarioService.getUsuarioPorUsername(
+                        authentication.getName()
+                );
+
+        if (administrador == null
+                || !"ADMIN".equalsIgnoreCase(administrador.getRol())) {
+            return "redirect:/perfil";
+        }
+
+        try {
+
+            usuarioService.registrarUsuarioAdministracion(
+                    usuario,
+                    "DOCTOR",
+                    idEspecialidad,
+                    descripcion
+            );
+
+            redirectAttributes.addFlashAttribute(
+                    "mensaje",
+                    "El médico se registró correctamente."
+            );
+
+            return "redirect:/admin/usuarios";
+
+        } catch (IllegalArgumentException
+                | DataIntegrityViolationException e) {
+
+            model.addAttribute("error", e.getMessage());
+
+            model.addAttribute(
+                    "especialidades",
+                    usuarioService.getEspecialidadesActivas()
+            );
+
+            return "usuario/agregar-doctor";
+        }
+    }
+    
     @GetMapping("/admin/usuarios")
     public String administrarUsuarios(
             Authentication authentication,
@@ -236,12 +472,17 @@ public class UsuarioController {
         model.addAttribute("usuario", usuario);
         model.addAttribute("pacientes", usuarioService.getPacientes());
         model.addAttribute("medicos", usuarioService.getMedicos());
-        model.addAttribute(
-                "especialidades",
-                usuarioService.getEspecialidadesActivas()
-        );
+        model.addAttribute("especialidades",usuarioService.getEspecialidadesActivas());
         model.addAttribute("mostrarAdministracion", true);
 
         return "usuario/perfil";
+    }
+    
+    private void cargarDatosEdicion(Integer id, Usuario usuario, Model model){
+        if("DOCTOR".equalsIgnoreCase(usuario.getRol())){
+            model.addAttribute("especialidades", usuarioService.getEspecialidadesActivas());
+            model.addAttribute("idEspecialidad", usuarioService.obtenerIdEspecialidadMedico(id));
+            }
+   
     }
 }

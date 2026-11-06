@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
@@ -363,19 +362,38 @@
             <div class="info-item">
                 <div class="info-icono">&#9719;</div>
                 <h3>Horario</h3>
-                <p>Información de atención</p>
+                <h4> Lunes - Sábado 7:00am a 7:00pm</h4>
             </div>
             <div class="info-item">
                 <div class="info-icono">&#9742;</div>
                 <h3>Teléfonos</h3>
-                <p>Información de contacto</p>
+                <h4>87496928 // 22665898</h4>
+               
             </div>
             <div class="info-item">
                 <div class="info-icono">&#9678;</div>
-                <h3>Ubicación</h3>
-                <p>Información del consultorio</p>
-            </div>
-        </div>
+                <section class="ubicacion-consultorio">
+                    <div class="ubicacion-contenido">
+                        <div class="ubicacion-icono">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        
+                 <h3>Ubicación</h3>
+
+                        <h4>San Jose, Costa Rica.</h4>
+
+                        <a href="https://www.google.com/maps/search/?api=1&query=San+Jose+Costa+Rica"
+                                target="_blank"
+                                class="btn-ubicacion">
+                            <i class="bi bi-map"></i>
+                           < Ver ubicación >
+                        </a>
+        
+                    </div>
+                </section>
+            
+        </section>
+              
         <div class="editar-info" sec:authorize="hasRole('ADMIN')">
             <a class="btn" href="#">Editar Información</a>
         </div>

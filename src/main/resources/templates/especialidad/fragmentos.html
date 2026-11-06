@@ -380,10 +380,12 @@
 
         <section th:fragment="medicos" class="contenido">
 
-            <div style="max-width: 1200px;
+            <div style="max-width: 1000px;
                         margin: 40px auto;
                         padding: 20px;">
-
+                
+                <div style="text-align: center; margin-bottom: 35px;">
+                
                 <h1 style="color: #124c7b;">
                     Médicos de
                     <span th:text="${especialidad.nombre}">
@@ -400,19 +402,20 @@
                    th:text="|Médicos encontrados: ${totalMedicos}|">
                     Médicos encontrados: 0
                 </p>
-
+                </div>
                 <!-- TARJETAS DE MÉDICOS -->
 
                 <div style="display: grid;
-                            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                            gap: 20px;
+                            grid-template-columns: repeat(auto-fit, minmax(280px, 420px));
+                            justify-content: center;
+                            gap: 25px;
                             margin-top: 30px;">
 
                     <div th:each="medico : ${medicos}"
                          style="background: white;
                                 border: 1px solid #dce6f0;
-                                border-radius: 12px;
-                                padding: 25px;
+                                border-radius: 16px;
+                                padding: 35px 25px;
                                 text-align: center;">
 
                         <div style="font-size: 45px;
@@ -420,17 +423,17 @@
                             👨‍⚕️
                         </div>
 
-                        <h3 style="color: #124c7b;"
+                        <h3 style="color: #124c7b; margin-bottom: 8px;"
                             th:text="|${medico.nombre} ${medico.apellidos}|">
                             Nombre del médico
                         </h3>
 
-                        <p style="color: #6b7c8f;"
+                        <p style="color: #6b7c8f; margin-bottom: 15px;"
                            th:text="${especialidad.nombre}">
                             Especialidad
                         </p>
 
-                        <p style="color: #6b7c8f;"
+                        <p style="color: #6b7c8f; margin-bottom: 8px;"
                            th:text="${medico.correo}">
                             Correo electrónico
                         </p>
@@ -440,7 +443,27 @@
                            th:text="${medico.telefono}">
                             Teléfono
                         </p>
-
+                        
+                        <hr style="border-color: #dce6f0; margin: 25px 0;">
+                        
+                        <div style="text-align: center;">
+                            <h5 style="color: #124c7b;
+                                font-weight: bold;
+                                    margin-bottom: 15px;">
+                                    
+                                <i class="bi bi-clock"></i>
+                                Horario de atención
+                            </h5>
+                               
+                            <p style="color: #6b7c8f;
+                              font-size: 14px;
+                              margin-bottom: 0;">
+                            Lunes a Sábado de 7:00am a 4:30pm.
+                            </p>
+                        
+                            
+                            
+                        </div>
                     </div>
 
                 </div>
