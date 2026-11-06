@@ -43,3 +43,15 @@ Desarrollar una plataforma que permita centralizar y mejorar la administración 
 ## Proyecto académico
 
 Este proyecto fue desarrollado como parte del proceso académico, aplicando conceptos de desarrollo web, arquitectura MVC, bases de datos, operaciones CRUD, persistencia con JPA/Hibernate y gestión de usuarios.
+
+## Avance 2 – Desarrollo de funcionalidades de HealthNow
+
+Durante el segundo avance del proyecto **HealthNow**, se ampliaron las funcionalidades del sistema para mejorar la administración de usuarios, médicos, especialidades y citas médicas.
+
+Se implementaron los roles **ADMIN, DOCTOR y PACIENTE**, permitiendo que cada usuario tenga acceso a diferentes funcionalidades según su perfil. También se desarrolló la gestión de especialidades médicas, la asignación de especialidades a los doctores y la consulta y actualización de información personal.
+
+Además, se incorporó el módulo de **gestión de citas médicas**, que permite a los pacientes agendar, consultar, modificar y cancelar citas. Los médicos pueden visualizar sus consultas programadas, confirmar solicitudes y actualizar el estado de las citas.
+
+Se realizaron mejoras en el panel de administración, incluyendo la edición de información de pacientes y médicos, así como la modificación de especialidades. También se agregaron datos informativos de la clínica, como horarios, contacto y ubicación mediante Google Maps.
+
+Finalmente, se trabajó en la integración de estas funcionalidades con **MySQL, Spring Boot, Spring Security y Thymeleaf**, realizando ajustes en las interfaces, validaciones y pruebas para mejorar el funcionamiento general del sistema.
