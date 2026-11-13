@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{general/fragmentos :: head}"></head>
+
+<body>
+    <header th:replace="~{general/fragmentos :: header}"></header>
+
+    <main class="contenido">
+        <section class="informacion-personal">
+
+            <h1 class="titulo-perfil">Agregar paciente</h1>
+            <hr class="linea-perfil">
+
+            <p>Complete la información para registrar un nuevo paciente.</p>
+
+            <div th:if="${error != null}"
+                 class="mensaje-error"
+                 th:text="${error}">
+            </div>
+
+            <form th:action="@{/admin/usuarios/nuevo-paciente}"
+                  th:object="${usuario}"
+                  method="post">
+
+                <div class="contenedor-datos">
+
+                    <div class="tarjeta-dato form-field">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" th:field="*{nombre}"
+                               maxlength="60" required class="form-control">
+                    </div>
+
+                    <div class="tarjeta-dato form-field">
+                        <label class="form-label">Apellidos</label>
+                        <input type="text" th:field="*{apellidos}"
+                               maxlength="100" required class="form-control">
+                    </div>
+
+                    <div class="tarjeta-dato form-field">
+                        <label class="form-label">Cédula</label>
+                        <input type="text" th:field="*{cedula}"
+                               required class="form-control">
+                    </div>
+
+                    <div class="tarjeta-dato form-field">
+                        <label class="form-label">Nombre de usuario</label>
+                        <input type="text" th:field="*{username}"
+                               required class="form-control">
+                    </div>
+
+                    <div class="tarjeta-dato form-field">
+                        <label class="form-label">Correo electrónico</label>
+                        <input type="email" th:field="*{correo}"
+                               maxlength="150" required class="form-control">
+                    </div>
+
+                    <div class="tarjeta-dato form-field">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" th:field="*{telefono}"
+                               maxlength="25" class="form-control">
+                    </div>
+
+                    <div class="tarjeta-dato form-field">
+                        <label class="form-label">Contraseña</label>
+                        <input type="password" th:field="*{password}"
+                               required class="form-control">
+                    </div>
+
+                </div>
+
+                <div class="contenedor-modificar">
+                    <button type="submit" class="boton-modificar">
+                        Registrar paciente
+                    </button>
+
+                    <a th:href="@{/admin/usuarios}"
+                       class="boton-editar">
+                        Cancelar
+                    </a>
+                </div>
+
+            </form>
+        </section>
+    </main>
+
+    <footer th:replace="~{general/fragmentos :: footer}"></footer>
+</body>
+</html>

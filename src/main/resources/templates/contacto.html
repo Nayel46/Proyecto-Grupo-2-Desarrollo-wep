@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthNow | Contacto</title>
+    <style>
+        :root {
+            --azul-oscuro: #0076a8;
+            --azul: #0089be;
+            --azul-claro: #34a5d2;
+            --texto: #233748;
+            --gris: #718395;
+            --fondo: #f5f9fc;
+            --borde: #e0eaf0;
+            --sombra: 0 8px 28px rgba(21,91,129,.09);
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--texto);
+            background: var(--fondo);
+        }
+        a { text-decoration: none; }
+        .nav {
+            background: var(--azul-claro);
+            padding: 17px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            box-shadow: 0 3px 10px rgba(0,0,0,.08);
+        }
+        .logo { color: white; font-size: 27px; font-weight: bold; }
+        .nav-links { display: flex; gap: 22px; flex-wrap: wrap; align-items: center; }
+        .nav-links a { color: white; font-size: 14px; }
+        .contenedor { max-width: 1100px; margin: 0 auto; padding: 55px 6% 70px; }
+        .intro { text-align: center; margin-bottom: 38px; }
+        .intro h1 { color: #17415b; font-size: clamp(28px, 4vw, 38px); margin: 0 0 12px; }
+        .intro p { color: var(--gris); line-height: 1.7; margin: 0; }
+        .tarjetas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+        .tarjeta {
+            background: white;
+            border: 1px solid var(--borde);
+            border-radius: 18px;
+            padding: 30px 22px;
+            text-align: center;
+            box-shadow: var(--sombra);
+        }
+        .icono {
+            width: 62px; height: 62px; margin: 0 auto 18px;
+            display: grid; place-items: center;
+            border-radius: 18px; background: #eaf7fc; color: var(--azul-oscuro);
+        }
+        .icono svg { width: 30px; height: 30px; }
+        .tarjeta h2 { margin: 0 0 12px; font-size: 20px; color: #24465b; }
+        .tarjeta p { color: var(--gris); line-height: 1.7; margin: 0; }
+        .telefonos a { color: var(--azul-oscuro); font-weight: bold; display: block; margin: 5px 0; }
+        .boton {
+            display: inline-flex; margin-top: 18px; padding: 11px 21px;
+            border-radius: 24px; background: var(--azul); color: white; font-weight: bold;
+        }
+        .boton:hover { background: var(--azul-oscuro); }
+        .volver { text-align: center; margin-top: 35px; }
+        .volver a { color: var(--azul-oscuro); font-weight: bold; }
+        footer { background: #087eae; padding: 23px; text-align: center; color: white; font-size: 13px; }
+        @media (max-width: 800px) { .tarjetas { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<header class="nav">
+    <a class="logo" th:href="@{/}">HealthNow</a>
+    <nav class="nav-links">
+        <a th:href="@{/}">Inicio</a>
+        <a th:href="@{/sobre-nosotros}">Sobre nosotros</a>
+    </nav>
+</header>
+
+<main class="contenedor">
+    <section class="intro">
+        <h1>Contáctanos</h1>
+        <p>Estamos para ayudarte. Puedes comunicarte con nosotros o visitarnos en nuestra ubicación.</p>
+    </section>
+
+    <section class="tarjetas">
+        <article class="tarjeta">
+            <div class="icono" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 7v5l3 2"></path>
+                </svg>
+            </div>
+            <h2>Horario de atención</h2>
+            <p>Lunes a sábado<br>7:00 a.m. a 7:00 p.m.</p>
+        </article>
+
+        <article class="tarjeta">
+            <div class="icono" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 3h4l2 5-2.5 1.5a15 15 0 0 0 6 6L16 13l5 2v4c0 1.1-.9 2-2 2C10 21 3 14 3 5c0-1.1.9-2 2-2z"></path>
+                </svg>
+            </div>
+            <h2>Teléfonos</h2>
+            <div class="telefonos">
+                <a href="tel:87496928">8749-6928</a>
+                <a href="tel:22665898">2266-5898</a>
+            </div>
+        </article>
+
+        <article class="tarjeta">
+            <div class="icono" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0z"></path>
+                    <circle cx="12" cy="10" r="2.5"></circle>
+                </svg>
+            </div>
+            <h2>Ubicación</h2>
+            <p>San José, Costa Rica</p>
+            <a class="boton" href="https://www.google.com/maps/search/?api=1&amp;query=San+Jose+Costa+Rica" target="_blank" rel="noopener noreferrer">Ver ubicación</a>
+        </article>
+    </section>
+
+    <div class="volver">
+        <a th:href="@{/}">← Volver a la página principal</a>
+    </div>
+</main>
+
+<footer>&copy; 2026 HealthNow | Tu salud, nuestra prioridad.</footer>
+</body>
+</html>

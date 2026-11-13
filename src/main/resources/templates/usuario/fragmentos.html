@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Fragmentos de Usuario</title>
+</head>
+
+<body>
+
+    <section th:fragment="informacionPersonal"
+             class="informacion-personal">
+
+        <h2 class="titulo-perfil">
+            Información Personal
+        </h2>
+
+        <hr class="linea-perfil">
+
+        <div class="contenedor-datos">
+
+            <div class="tarjeta-dato"
+                 sec:authorize="hasRole('DOCTOR')">
+
+                <div class="encabezado-dato">
+                    <strong>Especialidad</strong>
+                    <span class="icono-editar">
+                        &#9998;
+                    </span>
+                </div>
+
+                <p th:text="${especialidadMedico != null
+                        ? especialidadMedico
+                        : 'No asignada'}">
+                    Especialidad
+                </p>
+
+            </div>
+
+            <div class="tarjeta-dato">
+
+                <div class="encabezado-dato">
+                    <strong>Nombre Completo</strong>
+                    <span class="icono-editar">
+                        &#9998;
+                    </span>
+                </div>
+
+                <p th:text="${usuario.nombre + ' ' + usuario.apellidos}">
+                    Nombre completo
+                </p>
+
+            </div>
+
+            <div class="tarjeta-dato">
+
+                <div class="encabezado-dato">
+                    <strong>Cédula</strong>
+                    <span class="icono-editar">
+                        &#9998;
+                    </span>
+                </div>
+
+                <p th:text="${usuario.cedula}">
+                    Cédula
+                </p>
+
+            </div>
+
+            <div class="tarjeta-dato">
+
+                <div class="encabezado-dato">
+                    <strong>Género</strong>
+                    <span class="icono-editar">
+                        &#9998;
+                    </span>
+                </div>
+
+                <p>No especificado</p>
+
+            </div>
+
+            <div class="tarjeta-dato">
+
+                <div class="encabezado-dato">
+                    <strong>Correo Electrónico</strong>
+                    <span class="icono-editar">
+                        &#9998;
+                    </span>
+                </div>
+
+                <p th:text="${usuario.correo}">
+                    Correo electrónico
+                </p>
+
+            </div>
+
+            <div class="tarjeta-dato">
+
+                <div class="encabezado-dato">
+                    <strong>Número de teléfono</strong>
+                    <span class="icono-editar">
+                        &#9998;
+                    </span>
+                </div>
+
+                <p th:text="${usuario.telefono != null
+                        and !usuario.telefono.isEmpty()
+                        ? usuario.telefono
+                        : 'No registrado'}">
+                    Teléfono
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="contenedor-cerrar-sesion">
+
+            <form th:action="@{/logout}" method="post">
+
+                <button type="submit"
+                        class="boton-cerrar-sesion">
+                    Cerrar Sesión
+                </button>
+
+            </form>
+
+        </div>
+
+        <div class="contenedor-volver">
+
+            <a th:href="@{/}"
+               class="enlace-volver">
+                &#8592; Volver
+            </a>
+
+        </div>
+
+    </section>
+
+</body>
+</html>

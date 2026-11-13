@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>HealthNow | Inicio</title>
+        <style>
+            :root {
+                --azul-oscuro:#0076a8;
+                --azul:#0089be;
+                --azul-claro:#34a5d2;
+                --azul-suave:#eaf7fc;
+                --verde:#57e987;
+                --texto:#233748;
+                --gris:#718395;
+                --fondo:#f5f9fc;
+                --borde:#e0eaf0;
+                --sombra:0 5px 22px rgba(21,91,129,.07);
+            }
+            * {
+                box-sizing:border-box;
+            }
+            body {
+                margin:0;
+                font-family:Arial,Helvetica,sans-serif;
+                color:var(--texto);
+                background:var(--fondo);
+            }
+            a {
+                text-decoration:none;
+            }
+            button,input,select {
+                font-family:inherit;
+            }
+            .barra-superior {
+                background:var(--azul-oscuro);
+                min-height:42px;
+                padding:7px 6%;
+                display:flex;
+                justify-content:flex-end;
+                align-items:center;
+                color:white;
+            }
+            .usuario,.enlace-perfil {
+                display:flex;
+                align-items:center;
+                gap:12px;
+            }
+            .usuario {
+                font-size:12px;
+            }
+            .enlace-perfil {
+                color:white;
+                padding:4px 8px;
+                border-radius:8px;
+            }
+            .enlace-perfil:hover {
+                background:rgba(255,255,255,.12);
+            }
+            .usuario-icono {
+                width:30px;
+                height:30px;
+                border:1px solid white;
+                border-radius:50%;
+                display:grid;
+                place-items:center;
+                font-size:17px;
+            }
+            .usuario-info {
+                display:flex;
+                flex-direction:column;
+                gap:2px;
+            }
+            .usuario-info strong {
+                font-size:13px;
+            }
+            .btn-salir {
+                background:transparent;
+                color:white;
+                border:1px solid white;
+                border-radius:20px;
+                padding:7px 15px;
+                cursor:pointer;
+            }
+            .nav-principal {
+                background:var(--azul-claro);
+                padding:14px 6%;
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                gap:25px;
+                flex-wrap:wrap;
+                box-shadow:0 3px 10px rgba(0,0,0,.08);
+            }
+            .logo {
+                font-size:27px;
+                font-weight:bold;
+                color:white;
+            }
+            .nav-enlaces {
+                display:flex;
+                align-items:center;
+                gap:26px;
+                flex-wrap:wrap;
+            }
+            .nav-enlaces a {
+                color:white;
+                font-size:14px;
+            }
+            .nav-enlaces a:hover {
+                opacity:.8;
+            }
+            .btn-agendar {
+                background:var(--verde);
+                color:#13412b!important;
+                padding:10px 24px;
+                border-radius:25px;
+                font-weight:bold;
+            }
+            .contenido {
+                width:100%;
+                max-width:1450px;
+                margin:auto;
+                padding:38px 6% 60px;
+                min-height:75vh;
+            }
+            .encabezado-seccion {
+                margin-bottom:30px;
+            }
+            .encabezado-seccion h1 {
+                margin:0 0 10px;
+                font-size:clamp(25px,3vw,34px);
+                color:#17415b;
+            }
+            .encabezado-seccion p,.subtitulo-bloque {
+                color:var(--gris);
+                font-size:15px;
+                line-height:1.7;
+            }
+            .titulo-bloque {
+                margin:38px 0 18px;
+                font-size:22px;
+                color:#24465b;
+            }
+            .subtitulo-bloque {
+                margin:-8px 0 20px;
+            }
+            .btn {
+                display:inline-flex;
+                justify-content:center;
+                align-items:center;
+                padding:11px 23px;
+                border-radius:25px;
+                border:none;
+                background:var(--azul);
+                color:white;
+                font-size:14px;
+                font-weight:600;
+                cursor:pointer;
+                white-space:nowrap;
+            }
+            .btn:hover {
+                background:var(--azul-oscuro);
+            }
+            .btn-verde {
+                background:var(--verde);
+                color:#16462b;
+            }
+            .btn-verde:hover {
+                background:#3fd976;
+            }
+            .acciones-admin {
+                display:grid;
+                grid-template-columns:repeat(2,minmax(0,1fr));
+                gap:22px;
+                margin:30px 0 40px;
+            }
+            .accion-admin {
+                background:white;
+                border:1px solid var(--borde);
+                border-radius:18px;
+                padding:27px;
+                box-shadow:var(--sombra);
+                display:flex;
+                align-items:center;
+                gap:20px;
+            }
+            .accion-icono,.especialidad-icono {
+                width:55px;
+                height:55px;
+                border-radius:15px;
+                background:var(--azul-suave);
+                color:var(--azul-oscuro);
+                display:grid;
+                place-items:center;
+                font-size:26px;
+                flex-shrink:0;
+            }
+            .accion-texto {
+                flex:1;
+            }
+            .accion-texto h3 {
+                margin:0 0 8px;
+                font-size:17px;
+            }
+            .accion-texto p {
+                margin:0;
+                font-size:13px;
+                line-height:1.6;
+                color:var(--gris);
+            }
+            .especialidades-grid {
+                display:grid;
+                grid-template-columns:repeat(5,minmax(0,1fr));
+                gap:18px;
+            }
+
+            .especialidad-card {
+                min-height:145px;
+                background:white;
+                border:1px solid var(--borde);
+                border-radius:16px;
+                box-shadow:var(--sombra);
+                padding:20px 12px;
+                display:flex;
+                flex-direction:column;
+                align-items:center;
+                justify-content:center;
+                gap:13px;
+                text-align:center;
+                color:var(--texto);
+                transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+            }
+
+            .especialidad-card:hover {
+                transform:translateY(-4px);
+                box-shadow:0 10px 25px rgba(21,91,129,.12);
+                border-color:var(--azul-claro);
+            }
+
+            .especialidad-card span {
+                font-size:13px;
+                font-weight:600;
+                overflow-wrap:anywhere;
+            }
+
+
+            .especialidad-vacia {
+                grid-column:1/-1;
+                padding:35px;
+                background:white;
+                border:1px dashed var(--borde);
+                border-radius:16px;
+                text-align:center;
+                color:var(--gris);
+            }
+            .buscador-panel,.panel-tabla {
+                background:white;
+                border-radius:18px;
+                border:1px solid var(--borde);
+                box-shadow:var(--sombra);
+                padding:25px;
+                margin-bottom:30px;
+            }
+            .buscador-panel h2,.panel-tabla h2 {
+                margin:0 0 22px;
+                font-size:21px;
+            }
+            .buscador-grid {
+                display:grid;
+                grid-template-columns:1fr 1fr auto;
+                gap:20px;
+                align-items:end;
+            }
+            .campo label {
+                display:block;
+                margin-bottom:9px;
+                font-size:13px;
+                font-weight:600;
+            }
+            .campo select,.selector-estado {
+                width:100%;
+                min-height:42px;
+                border:1px solid #cbdce6;
+                border-radius:10px;
+                padding:8px;
+                background:white;
+                color:var(--texto);
+            }
+            .campo select:disabled {
+                background:#f0f3f6;
+            }
+            .tabla-scroll {
+                overflow-x:auto;
+            }
+            .tabla-citas {
+                width:100%;
+                border-collapse:collapse;
+                font-size:13px;
+            }
+            .tabla-citas th {
+                background:var(--azul-suave);
+                color:#28536b;
+                text-align:left;
+                padding:14px 12px;
+                border-bottom:2px solid #cde7f4;
+                white-space:nowrap;
+            }
+            .tabla-citas td {
+                padding:16px 12px;
+                border-bottom:1px solid var(--borde);
+                vertical-align:middle;
+            }
+            .tabla-vacia {
+                text-align:center;
+                color:var(--gris);
+                padding:35px 15px!important;
+            }
+            .panel-acciones {
+                margin-top:20px;
+                display:flex;
+                justify-content:flex-end;
+            }
+            .estado {
+                display:inline-block;
+                padding:7px 12px;
+                border-radius:20px;
+                font-size:12px;
+                font-weight:bold;
+            }
+            .estado-pendiente {
+                background:#fff3cd;
+                color:#856404;
+            }
+            .estado-confirmada {
+                background:#d1e7dd;
+                color:#0f5132;
+            }
+            .estado-cancelada {
+                background:#f8d7da;
+                color:#842029;
+            }
+            .estado-atendida {
+                background:#dbeafe;
+                color:#1d4ed8;
+            }
+            .form-estado {
+                display:flex;
+                align-items:center;
+                gap:8px;
+                min-width:220px;
+            }
+            .btn-confirmar {
+                background:var(--verde);
+                color:#16462b;
+                border:none;
+                border-radius:20px;
+                padding:10px 16px;
+                font-weight:bold;
+                cursor:pointer;
+            }
+            .btn-confirmar:hover {
+                background:#3fd976;
+            }
+            .mensaje-exito,.mensaje-error {
+                padding:15px 20px;
+                border-radius:12px;
+                margin-bottom:20px;
+            }
+            .mensaje-exito {
+                background:#d1e7dd;
+                color:#0f5132;
+            }
+            .mensaje-error {
+                background:#f8d7da;
+                color:#842029;
+            }
+
+            /* Información de HealthNow */
+            .informacion {
+                margin-top:50px;
+                display:grid;
+                grid-template-columns:repeat(3,minmax(0,1fr));
+                gap:22px;
+            }
+
+            .info-item {
+                background:white;
+                border:1px solid var(--borde);
+                border-radius:18px;
+                padding:28px 20px;
+                text-align:center;
+                box-shadow:var(--sombra);
+                transition:transform .2s ease, box-shadow .2s ease;
+            }
+
+            .info-item:hover {
+                transform:translateY(-4px);
+                box-shadow:0 10px 25px rgba(21,91,129,.12);
+            }
+
+            .info-icono {
+                width:60px;
+                height:60px;
+                margin:0 auto 16px;
+                border-radius:16px;
+                background:var(--azul-suave);
+                color:var(--azul-oscuro);
+                display:flex;
+                align-items:center;
+                justify-content:center;
+            }
+
+            .informacion .info-icono svg {
+                width:29px !important;
+                height:29px !important;
+                max-width:29px !important;
+                max-height:29px !important;
+                display:block;
+            }
+
+            .info-item h3 {
+                margin:0 0 10px;
+                color:#24465b;
+                font-size:18px;
+            }
+
+            .info-item p {
+                margin:5px 0;
+                font-size:14px;
+                color:var(--gris);
+                line-height:1.6;
+            }
+
+            .info-telefono,
+            .info-telefono:visited {
+                display:block;
+                margin:7px 0;
+                color:var(--azul-oscuro);
+                font-size:15px;
+                font-weight:bold;
+                text-decoration:none;
+            }
+
+            .btn-ubicacion,
+            .btn-ubicacion:visited {
+                display:inline-flex;
+                align-items:center;
+                justify-content:center;
+                gap:8px;
+                margin-top:14px;
+                padding:10px 19px;
+                border-radius:25px;
+                background:var(--azul);
+                color:white;
+                font-size:13px;
+                font-weight:bold;
+                text-decoration:none;
+            }
+
+            .btn-ubicacion:hover {
+                background:var(--azul-oscuro);
+            }
+
+            .btn-ubicacion svg {
+                width:16px !important;
+                height:16px !important;
+            }
+
+            .editar-info {
+                text-align:center;
+                margin-top:22px;
+            }
+
+            .visitante {
+                text-align:center;
+                background:white;
+                border-radius:22px;
+                padding:65px 25px;
+                margin-top:25px;
+                box-shadow:var(--sombra);
+            }
+
+            .visitante h1 {
+                color:var(--azul-oscuro);
+                font-size:35px;
+            }
+
+            .visitante p {
+                color:var(--gris);
+                line-height:1.8;
+            }
+
+            .visitante-acciones {
+                margin-top:25px;
+                display:flex;
+                justify-content:center;
+                gap:15px;
+                flex-wrap:wrap;
+            }
+
+            footer {
+                margin-top:30px;
+                background:#087eae;
+                padding:24px;
+                text-align:center;
+                color:white;
+                font-size:13px;
+            }
+
+            @media(max-width:1100px) {
+                .especialidades-grid {
+                    grid-template-columns:repeat(3,1fr);
+                }
+
+                .acciones-admin {
+                    grid-template-columns:1fr;
+                }
+            }
+
+            @media(max-width:750px) {
+                .nav-principal {
+                    padding:16px 5%;
+                }
+
+                .nav-enlaces {
+                    gap:15px;
+                }
+
+                .contenido {
+                    padding:28px 5% 45px;
+                }
+
+                .especialidades-grid {
+                    grid-template-columns:repeat(2,1fr);
+                }
+
+                .buscador-grid,
+                .informacion {
+                    grid-template-columns:1fr;
+                }
+
+                .accion-admin {
+                    flex-direction:column;
+                    text-align:center;
+                }
+            }
+
+        </style>
+    </head>
+    <body>
+
+        <div class="barra-superior">
+            <div class="usuario" sec:authorize="isAuthenticated()">
+                <a th:href="@{/perfil}" class="enlace-perfil">
+                    <div class="usuario-icono">&#9786;</div>
+                    <div class="usuario-info">
+                        <strong sec:authentication="name">Usuario</strong>
+                        <span sec:authorize="hasRole('ADMIN')">Administrador</span>
+                        <span sec:authorize="hasRole('DOCTOR')">Doctor</span>
+                        <span sec:authorize="hasRole('PACIENTE')">Paciente</span>
+                    </div>
+                </a>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="btn-salir">Salir</button>
+                </form>
+            </div>
+            <a sec:authorize="isAnonymous()" th:href="@{/login}" style="color:white">Iniciar sesión</a>
+        </div>
+
+        <header class="nav-principal">
+            <a class="logo" th:href="@{/}">HealthNow</a>
+            <nav class="nav-enlaces">
+                <a th:href="@{/}">Inicio</a>
+                <a th:href="@{/especialidad/listado}" sec:authorize="isAuthenticated()">Especialidades</a>
+                <a th:href="@{/cita/listado}" sec:authorize="hasRole('PACIENTE')">Mis citas</a>
+                <a th:href="@{/cita/listado}" sec:authorize="hasRole('DOCTOR')">Mi agenda médica</a>
+                <a th:href="@{/sobre-nosotros}">Sobre nosotros</a>
+                <a th:href="@{/contacto}">Contacto</a>
+                <a class="btn-agendar" th:href="@{/cita/agendar}" sec:authorize="hasRole('PACIENTE')">AGENDAR CITA</a>
+                <a th:href="@{/registro}" sec:authorize="isAnonymous()">Registrarse</a>
+            </nav>
+        </header>
+
+        <main class="contenido">
+
+            <section sec:authorize="hasRole('ADMIN')">
+                <div class="encabezado-seccion">
+                    <h1>Panel de Administración</h1>
+                    <p>Gestiona los servicios y la información de HealthNow desde un solo lugar.</p>
+                </div>
+                <div class="acciones-admin">
+                    <div class="accion-admin">
+                        <div class="accion-icono">&#9786;</div>
+                        <div class="accion-texto">
+                            <h3>Administrar Usuarios</h3>
+                            <p>Consulta y administra los usuarios registrados en la plataforma.</p>
+                        </div>
+                        <a class="btn" th:href="@{/admin/usuarios}">Administrar</a>
+                    </div>
+                    <div class="accion-admin">
+                        <div class="accion-icono">&#9881;</div>
+                        <div class="accion-texto">
+                            <h3>Administrar Especialidades</h3>
+                            <p>Gestiona las especialidades y servicios médicos disponibles.</p>
+                        </div>
+                        <a class="btn" th:href="@{/especialidad/listado}">Administrar</a>
+                    </div>
+                </div>
+            </section>
+
+            <section sec:authorize="hasRole('PACIENTE')">
+                <div class="encabezado-seccion">
+                    <h1>Encuentra profesionales de la salud</h1>
+                    <p>Explora nuestros servicios médicos y encuentra la atención que necesitas.</p>
+                </div>
+                <div class="buscador-panel">
+                    <h2>Buscar especialidades</h2>
+                    <form class="buscador-grid" th:action="@{/especialidad/buscar}" method="get">
+                        <div class="campo">
+                            <label for="nombre">¿Qué necesitas?</label>
+                            <select id="nombre" name="nombre">
+                                <option value="">Todas las especialidades</option>
+                                <option th:each="especialidad : ${especialidades}"
+                                        th:value="${especialidad.nombre}"
+                                        th:text="${especialidad.nombre}"></option>
+                            </select>
+                        </div>
+                        <div class="campo">
+                            <label for="tipo">Tipo de consulta</label>
+                            <select id="tipo" disabled>
+                                <option>Próximamente</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-verde" type="submit">Buscar</button>
+                    </form>
+                </div>
+
+                <h2 class="titulo-bloque">Gestión de Citas Médicas</h2>
+                <p class="subtitulo-bloque">Agenda nuevas citas o consulta las que ya tienes registradas.</p>
+                <div class="acciones-admin">
+                    <div class="accion-admin">
+                        <div class="accion-icono">&#128197;</div>
+                        <div class="accion-texto">
+                            <h3>Agendar cita médica</h3>
+                            <p>Selecciona un doctor, fecha y horario para solicitar una cita médica.</p>
+                        </div>
+                        <a class="btn btn-verde" th:href="@{/cita/agendar}">Agendar</a>
+                    </div>
+                    <div class="accion-admin">
+                        <div class="accion-icono">&#128203;</div>
+                        <div class="accion-texto">
+                            <h3>Mis citas médicas</h3>
+                            <p>Consulta, modifica o cancela tus citas médicas registradas.</p>
+                        </div>
+                        <a class="btn" th:href="@{/cita/listado}">Consultar</a>
+                    </div>
+                </div>
+            </section>
+
+            <section sec:authorize="hasAnyRole('ADMIN','PACIENTE')">
+                <h2 class="titulo-bloque">Especialidades Médicas</h2>
+                <p class="subtitulo-bloque">Conoce las especialidades disponibles en HealthNow.</p>
+                <div class="especialidades-grid">
+                    <a class="especialidad-card"
+                       th:each="especialidad : ${especialidades}"
+                       th:href="@{/especialidad/buscar(nombre=${especialidad.nombre})}">
+                        <div class="especialidad-icono">&#9829;</div>
+                        <span th:text="${especialidad.nombre}">Especialidad</span>
+                    </a>
+                    <div class="especialidad-vacia"
+                         th:if="${especialidades == null or #lists.isEmpty(especialidades)}">
+                        No hay especialidades disponibles en este momento.
+                    </div>
+                </div>
+                <div style="margin-top:25px" sec:authorize="hasRole('ADMIN')">
+                    <a class="btn btn-verde" th:href="@{/especialidad/nuevo}">+ Agregar Especialidad</a>
+                </div>
+            </section>
+
+            <section sec:authorize="hasRole('DOCTOR')">
+                <div class="encabezado-seccion">
+                    <h1>Panel Médico</h1>
+                    <p>Consulta tu agenda y administra el estado de tus citas.</p>
+                </div>
+
+                <div class="mensaje-exito" th:if="${mensaje}" th:text="${mensaje}"></div>
+                <div class="mensaje-error" th:if="${error}" th:text="${error}"></div>
+
+                <div class="panel-tabla" th:with="citas=${citasDelDia}">
+                    <h2>Citas del día (<span th:text="${totalCitasDelDia ?: 0}">0</span>)</h2>
+                    <div class="tabla-scroll">
+                        <table class="tabla-citas">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Especialidad</th>
+                                    <th>Doctor</th>
+                                    <th>Modalidad</th>
+                                    <th>Paciente</th>
+                                    <th>Cédula</th>
+                                    <th>Correo</th>
+                                    <th>Motivo</th>
+                                    <th>Estado</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="cita : ${citas}">
+                                    <td th:text="${cita.fecha}"></td>
+                                    <td th:text="${cita.hora}"></td>
+                                    <td th:text="${especialidadDoctor ?: 'Sin especialidad'}"></td>
+                                    <td th:text="${cita.doctor.nombre + ' ' + cita.doctor.apellidos}"></td>
+                                    <td th:text="${cita.modalidad}"></td>
+                                    <td th:text="${cita.paciente.nombre + ' ' + cita.paciente.apellidos}"></td>
+                                    <td th:text="${cita.paciente.cedula}"></td>
+                                    <td th:text="${cita.paciente.correo}"></td>
+                                    <td th:text="${cita.motivo}"></td>
+                                    <td>
+                                        <span class="estado"
+                                              th:classappend="${' estado-' + #strings.toLowerCase(cita.estado)}"
+                                              th:text="${cita.estado}"></span>
+                                    </td>
+                                    <td>
+                                        <form class="form-estado"
+                                              th:if="${cita.estado == 'PENDIENTE' or cita.estado == 'CONFIRMADA'}"
+                                              th:action="@{/cita/cambiar-estado/{id}(id=${cita.idCita})}"
+                                              method="post">
+                                            <select class="selector-estado" name="nuevoEstado" required>
+                                                <option value="">Seleccionar</option>
+                                                <option th:if="${cita.estado == 'PENDIENTE'}" value="CONFIRMADA">Confirmar</option>
+                                                <option value="CANCELADA">Cancelar</option>
+                                                <option th:if="${cita.estado == 'CONFIRMADA'}" value="ATENDIDA">Atendida</option>
+                                            </select>
+                                            <button class="btn-confirmar" type="submit">Guardar</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr th:if="${citas == null or #lists.isEmpty(citas)}">
+                                    <td colspan="11" class="tabla-vacia">No tienes citas programadas para hoy.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="panel-acciones">
+                        <a class="btn" th:href="@{/cita/listado}">Ver mi agenda médica</a>
+                    </div>
+                </div>
+
+                <div class="panel-tabla" th:with="citas=${citasPendientes}">
+                    <h2>Citas Pendientes de Confirmar (<span th:text="${totalCitasPendientes ?: 0}">0</span>)</h2>
+                    <div class="tabla-scroll">
+                        <table class="tabla-citas">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Especialidad</th>
+                                    <th>Paciente</th>
+                                    <th>Cédula</th>
+                                    <th>Correo</th>
+                                    <th>Motivo</th>
+                                    <th>Estado</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="cita : ${citas}">
+                                    <td th:text="${cita.fecha}"></td>
+                                    <td th:text="${cita.hora}"></td>
+                                    <td th:text="${especialidadDoctor ?: 'Sin especialidad'}"></td>
+                                    <td th:text="${cita.paciente.nombre + ' ' + cita.paciente.apellidos}"></td>
+                                    <td th:text="${cita.paciente.cedula}"></td>
+                                    <td th:text="${cita.paciente.correo}"></td>
+                                    <td th:text="${cita.motivo}"></td>
+                                    <td>
+                                        <span class="estado estado-pendiente" th:text="${cita.estado}"></span>
+                                    </td>
+                                    <td>
+                                        <form class="form-estado"
+                                              th:action="@{/cita/cambiar-estado/{id}(id=${cita.idCita})}"
+                                              method="post">
+                                            <select class="selector-estado" name="nuevoEstado" required>
+                                                <option value="">Seleccionar</option>
+                                                <option value="CONFIRMADA">Confirmar</option>
+                                                <option value="CANCELADA">Cancelar</option>
+                                            </select>
+                                            <button class="btn-confirmar" type="submit">Guardar</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr th:if="${citas == null or #lists.isEmpty(citas)}">
+                                    <td colspan="9" class="tabla-vacia">No tienes citas pendientes de confirmar.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="panel-acciones">
+                        <a class="btn" th:href="@{/cita/listado}">Ver mi agenda médica</a>
+                    </div>
+                </div>
+            </section>
+
+            <section sec:authorize="hasAnyRole('ADMIN','PACIENTE')">
+
+                <div class="informacion">
+
+                    <!-- TARJETA DE HORARIO -->
+                    <div class="info-item">
+
+                        <div class="info-icono">
+                            <svg viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.8"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <path d="M12 7v5l3 2"></path>
+                            </svg>
+                        </div>
+
+                        <h3>Horario de atención</h3>
+                        <p>Lunes - Sábado</p>
+                        <p><strong>7:00 a.m. - 7:00 p.m.</strong></p>
+
+                    </div>
+
+                    <!-- TARJETA DE TELÉFONOS -->
+                    <div class="info-item">
+
+                        <div class="info-icono">
+                            <svg viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.8"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 3h4l2 5-2.5 1.5a15 15 0 0 0 6 6L16 13l5 2v4c0 1.1-.9 2-2 2C10 21 3 14 3 5c0-1.1.9-2 2-2z"></path>
+                            </svg>
+                        </div>
+
+                        <h3>Teléfonos de contacto</h3>
+
+                        <a class="info-telefono" href="tel:87496928">
+                            87496928
+                        </a>
+
+                        <a class="info-telefono" href="tel:22665898">
+                            22665898
+                        </a>
+
+                    </div>
+
+                    <!-- TARJETA DE UBICACIÓN -->
+                    <div class="info-item">
+
+                        <div class="info-icono">
+                            <svg viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.8"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0z"></path>
+                            <circle cx="12" cy="10" r="2.5"></circle>
+                            </svg>
+                        </div>
+
+                        <h3>Ubicación</h3>
+                        <p>San José, Costa Rica</p>
+
+                        <a href="https://www.google.com/maps/search/?api=1&amp;query=San+Jose+Costa+Rica"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="btn-ubicacion">
+
+                            <svg viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M15 3h6v6"></path>
+                            <path d="M10 14L21 3"></path>
+                            <path d="M19 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h6"></path>
+                            </svg>
+
+                            Ver ubicación
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+            </section>
+
+        </section>
+
+
+    </section>
+
+    <section class="visitante" sec:authorize="isAnonymous()">
+        <h1>Bienvenido a HealthNow</h1>
+        <p>Tu salud, nuestra prioridad. Una plataforma para facilitar el acceso a los servicios de salud.</p>
+        <div class="visitante-acciones">
+            <a class="btn" th:href="@{/login}">Iniciar sesión</a>
+            <a class="btn btn-verde" th:href="@{/registro}">Crear una cuenta</a>
+        </div>
+    </section>
+
+</main>
+
+<footer>&copy; 2026 HealthNow | Tu salud, nuestra prioridad.</footer>
+</body>
+</html>

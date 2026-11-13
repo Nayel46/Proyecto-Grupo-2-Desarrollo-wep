@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthNow | Sobre nosotros</title>
+    <style>
+        :root {
+            --azul-oscuro: #0076a8;
+            --azul: #0089be;
+            --azul-claro: #34a5d2;
+            --texto: #233748;
+            --gris: #718395;
+            --fondo: #f5f9fc;
+            --borde: #e0eaf0;
+            --sombra: 0 8px 28px rgba(21,91,129,.09);
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: var(--texto); background: var(--fondo); }
+        a { text-decoration: none; }
+        .nav {
+            background: var(--azul-claro); padding: 17px 6%;
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 20px; flex-wrap: wrap; box-shadow: 0 3px 10px rgba(0,0,0,.08);
+        }
+        .logo { color: white; font-size: 27px; font-weight: bold; }
+        .nav-links { display: flex; gap: 22px; flex-wrap: wrap; }
+        .nav-links a { color: white; font-size: 14px; }
+        .contenedor { max-width: 1000px; margin: 0 auto; padding: 55px 6% 70px; }
+        .hero {
+            background: white; border: 1px solid var(--borde); border-radius: 22px;
+            padding: clamp(28px, 5vw, 55px); box-shadow: var(--sombra); text-align: center;
+        }
+        h1 { color: #17415b; font-size: clamp(28px, 4vw, 38px); margin: 0 0 18px; }
+        .hero p { color: var(--gris); line-height: 1.9; font-size: 16px; max-width: 760px; margin: 0 auto; }
+        .bloques { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; margin-top: 25px; }
+        .bloque { background: white; border: 1px solid var(--borde); border-radius: 18px; padding: 27px; box-shadow: var(--sombra); }
+        .bloque h2 { color: var(--azul-oscuro); margin: 0 0 12px; font-size: 21px; }
+        .bloque p { color: var(--gris); line-height: 1.8; margin: 0; }
+        .volver { text-align: center; margin-top: 32px; }
+        .volver a { display: inline-block; padding: 12px 23px; border-radius: 24px; background: var(--azul); color: white; font-weight: bold; }
+        .volver a:hover { background: var(--azul-oscuro); }
+        footer { background: #087eae; padding: 23px; text-align: center; color: white; font-size: 13px; }
+        @media (max-width: 700px) { .bloques { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<header class="nav">
+    <a class="logo" th:href="@{/}">HealthNow</a>
+    <nav class="nav-links">
+        <a th:href="@{/}">Inicio</a>
+        <a th:href="@{/contacto}">Contacto</a>
+    </nav>
+</header>
+
+<main class="contenedor">
+    <section class="hero">
+        <h1>Sobre nosotros</h1>
+        <p>
+            En HealthNow buscamos facilitar el acceso a los servicios de salud mediante una
+            plataforma que conecta a pacientes con profesionales médicos. Nuestro objetivo
+            es ofrecer una experiencia sencilla para consultar especialidades, gestionar
+            citas médicas y mantener organizada la información relacionada con la atención.
+        </p>
+    </section>
+
+    <section class="bloques">
+        <article class="bloque">
+            <h2>Nuestra misión</h2>
+            <p>Facilitar la gestión de servicios y citas médicas por medio de una plataforma
+               accesible, organizada y fácil de utilizar.</p>
+        </article>
+        <article class="bloque">
+            <h2>Nuestra visión</h2>
+            <p>Ser una plataforma de apoyo para la coordinación de la atención médica,
+               promoviendo una experiencia clara y eficiente para pacientes y profesionales.</p>
+        </article>
+    </section>
+
+    <div class="volver">
+        <a th:href="@{/}">Volver a la página principal</a>
+    </div>
+</main>
+
+<footer>&copy; 2026 HealthNow | Tu salud, nuestra prioridad.</footer>
+</body>
+</html>

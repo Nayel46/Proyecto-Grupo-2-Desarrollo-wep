@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro | HealthNow</title>
+
+    <link rel="stylesheet" th:href="@{/static.css}">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #e8f4ff, #c7e4ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 15px;
+            color: #183153;
+        }
+
+        .register-card {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            padding: 35px 40px;
+            border-radius: 18px;
+            box-shadow: 0 12px 35px rgba(20, 85, 150, 0.15);
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .brand h1 {
+            color: #0875d1;
+            font-size: 34px;
+            margin: 0 0 8px;
+        }
+
+        .brand p {
+            color: #6b7c93;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #183153;
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 7px;
+            color: #344b67;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid #cbd8e6;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus {
+            border-color: #1685e5;
+            box-shadow: 0 0 0 3px rgba(22, 133, 229, 0.12);
+        }
+
+        .btn-register {
+            width: 100%;
+            margin-top: 25px;
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            background: #0875d1;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-register:hover {
+            background: #055da8;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            font-size: 14px;
+        }
+
+        .error {
+            background: #ffe9e9;
+            color: #a52323;
+        }
+
+        .success {
+            background: #e5f8ed;
+            color: #176b3a;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 22px;
+            font-size: 14px;
+            line-height: 2;
+        }
+
+        .links a {
+            color: #0875d1;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 520px) {
+            .register-card {
+                padding: 28px 22px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="register-card">
+
+        <header class="brand">
+            <h1>HealthNow</h1>
+            <p>Tu salud, nuestra prioridad</p>
+        </header>
+
+        <h2>Crear una cuenta</h2>
+
+        <div class="message error"
+             th:if="${error}"
+             th:text="${error}">
+        </div>
+
+        <div class="message success"
+             th:if="${mensaje}"
+             th:text="${mensaje}">
+        </div>
+
+        <form th:action="@{/registro}"
+              method="post"
+              th:object="${usuario}">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text"
+                           id="nombre"
+                           th:field="*{nombre}"
+                           maxlength="60"
+                           autocomplete="given-name"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="apellidos">Apellidos</label>
+                    <input type="text"
+                           id="apellidos"
+                           th:field="*{apellidos}"
+                           maxlength="100"
+                           autocomplete="family-name"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cedula">Cédula</label>
+                    <input type="text"
+                           id="cedula"
+                           th:field="*{cedula}"
+                           maxlength="30"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono">Teléfono</label>
+                    <input type="tel"
+                           id="telefono"
+                           th:field="*{telefono}"
+                           maxlength="25"
+                           autocomplete="tel">
+                </div>
+
+                <div class="form-group full">
+                    <label for="correo">Correo electrónico</label>
+                    <input type="email"
+                           id="correo"
+                           th:field="*{correo}"
+                           maxlength="150"
+                           autocomplete="email"
+                           required>
+                </div>
+
+                <div class="form-group full">
+                    <label for="username">Nombre de usuario</label>
+                    <input type="text"
+                           id="username"
+                           th:field="*{username}"
+                           maxlength="30"
+                           autocomplete="username"
+                           required>
+                </div>
+
+                <div class="form-group full">
+                    <label for="password">Contraseña</label>
+                    <input type="password"
+                           id="password"
+                           th:field="*{password}"
+                           maxlength="72"
+                           autocomplete="new-password"
+                           required>
+                </div>
+
+            </div>
+
+            <button type="submit" class="btn-register">
+                Crear mi cuenta
+            </button>
+
+        </form>
+
+        <div class="links">
+            <p>
+                ¿Ya tienes una cuenta?
+                <a th:href="@{/login}">Inicia sesión</a>
+            </p>
+
+            <a th:href="@{/}">Volver al inicio</a>
+        </div>
+
+    </main>
+
+</body>
+</html>

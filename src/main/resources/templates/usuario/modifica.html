@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="~{general/fragmentos :: head}"></head>
+
+<body>
+
+    <header th:replace="~{general/fragmentos :: header}">
+    </header>
+
+    <main class="contenido">
+
+        <style>
+            .formulario-perfil {
+                background: white;
+                padding: 35px 40px;
+                border-radius: 12px;
+                border: 1px solid #dce6f0;
+                max-width: 1000px;
+                margin: auto;
+            }
+
+            .titulo-perfil {
+                font-size: 24px;
+                font-weight: bold;
+                color: #24364b;
+                margin: 0 0 15px;
+            }
+
+            .linea-perfil {
+                border: none;
+                border-top: 1px solid #dce6f0;
+                margin-bottom: 30px;
+            }
+
+            .descripcion-perfil {
+                color: #526578;
+                font-size: 14px;
+                margin-bottom: 25px;
+            }
+
+            .contenedor-campos {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 22px;
+            }
+
+            .campo {
+                display: flex;
+                flex-direction: column;
+                gap: 9px;
+            }
+
+            .campo label {
+                font-size: 13px;
+                font-weight: bold;
+                color: #24364b;
+            }
+
+            .campo input {
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px 14px;
+                border: 1px solid #dce6f0;
+                border-radius: 8px;
+                font-size: 14px;
+                color: #24364b;
+                background: white;
+            }
+
+            .campo input:focus {
+                outline: none;
+                border-color: #1766a4;
+                box-shadow: 0 0 0 2px rgba(23,102,164,.12);
+            }
+
+            .campo input:disabled {
+                background: #f1f5f9;
+                color: #526578;
+                cursor: not-allowed;
+            }
+
+            .mensaje-error {
+                background: #fdeaea;
+                color: #a12d2d;
+                padding: 15px 20px;
+                border-radius: 10px;
+                margin-bottom: 25px;
+                font-size: 14px;
+            }
+
+            .contenedor-botones {
+                display: flex;
+                justify-content: center;
+                gap: 15px;
+                margin-top: 40px;
+                flex-wrap: wrap;
+            }
+
+            .boton-guardar {
+                background: #25a56a;
+                color: white;
+                padding: 12px 35px;
+                border: none;
+                border-radius: 25px;
+                font-size: 14px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .boton-guardar:hover {
+                background: #1b8755;
+            }
+
+            .boton-cancelar {
+                display: inline-block;
+                background: #edf2f7;
+                color: #42566c;
+                padding: 12px 35px;
+                border-radius: 25px;
+                font-size: 14px;
+                font-weight: bold;
+                text-decoration: none;
+            }
+
+            .boton-cancelar:hover {
+                background: #dce6f0;
+            }
+
+            @media (max-width: 768px) {
+                .formulario-perfil {
+                    padding: 25px 18px;
+                }
+
+                .contenedor-campos {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+
+        <section class="formulario-perfil">
+
+            <h1 class="titulo-perfil">
+                Modificar Información Personal
+            </h1>
+
+            <hr class="linea-perfil">
+
+            <p class="descripcion-perfil">
+                Actualiza tus datos personales.
+                Los cambios se guardarán en tu cuenta de HealthNow.
+            </p>
+
+            <div th:if="${error != null}"
+                 class="mensaje-error"
+                 th:text="${error}">
+            </div>
+
+            <form th:action="@{/perfil/guardar}"
+                  th:object="${usuario}"
+                  method="post">
+
+                <div class="contenedor-campos">
+
+                    <div class="campo">
+                        <label for="nombre">
+                            Nombre
+                        </label>
+
+                        <input type="text"
+                               id="nombre"
+                               th:field="*{nombre}"
+                               maxlength="60"
+                               required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="apellidos">
+                            Apellidos
+                        </label>
+
+                        <input type="text"
+                               id="apellidos"
+                               th:field="*{apellidos}"
+                               maxlength="100"
+                               required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="correo">
+                            Correo Electrónico
+                        </label>
+
+                        <input type="email"
+                               id="correo"
+                               th:field="*{correo}"
+                               maxlength="150"
+                               required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="telefono">
+                            Número de Teléfono
+                        </label>
+
+                        <input type="tel"
+                               id="telefono"
+                               th:field="*{telefono}"
+                               maxlength="25">
+                    </div>
+
+                    <div class="campo">
+                        <label for="cedula">
+                            Cédula
+                        </label>
+
+                        <input type="text"
+                               id="cedula"
+                               th:value="${usuario.cedula}"
+                               disabled>
+                    </div>
+
+                    <div class="campo">
+                        <label for="username">
+                            Nombre de Usuario
+                        </label>
+
+                        <input type="text"
+                               id="username"
+                               th:value="${usuario.username}"
+                               disabled>
+                    </div>
+
+                    <div class="campo">
+                        <label for="rol">
+                            Rol
+                        </label>
+
+                        <input type="text"
+                               id="rol"
+                               th:value="${usuario.rol}"
+                               disabled>
+                    </div>
+
+                </div>
+
+                <div class="contenedor-botones">
+
+                    <button type="submit"
+                            class="boton-guardar">
+                        Guardar Cambios
+                    </button>
+
+                    <a th:href="@{/perfil}"
+                       class="boton-cancelar">
+                        Cancelar
+                    </a>
+
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+    <footer th:replace="~{general/fragmentos :: footer}">
+    </footer>
+
+</body>
+</html>
