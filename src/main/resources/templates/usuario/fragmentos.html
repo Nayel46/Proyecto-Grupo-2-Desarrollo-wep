@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
@@ -26,9 +25,6 @@
 
                 <div class="encabezado-dato">
                     <strong>Especialidad</strong>
-                    <span class="icono-editar">
-                        &#9998;
-                    </span>
                 </div>
 
                 <p th:text="${especialidadMedico != null
@@ -43,9 +39,6 @@
 
                 <div class="encabezado-dato">
                     <strong>Nombre Completo</strong>
-                    <span class="icono-editar">
-                        &#9998;
-                    </span>
                 </div>
 
                 <p th:text="${usuario.nombre + ' ' + usuario.apellidos}">
@@ -58,9 +51,6 @@
 
                 <div class="encabezado-dato">
                     <strong>Cédula</strong>
-                    <span class="icono-editar">
-                        &#9998;
-                    </span>
                 </div>
 
                 <p th:text="${usuario.cedula}">
@@ -73,9 +63,6 @@
 
                 <div class="encabezado-dato">
                     <strong>Género</strong>
-                    <span class="icono-editar">
-                        &#9998;
-                    </span>
                 </div>
 
                 <p>No especificado</p>
@@ -86,9 +73,6 @@
 
                 <div class="encabezado-dato">
                     <strong>Correo Electrónico</strong>
-                    <span class="icono-editar">
-                        &#9998;
-                    </span>
                 </div>
 
                 <p th:text="${usuario.correo}">
@@ -101,9 +85,6 @@
 
                 <div class="encabezado-dato">
                     <strong>Número de teléfono</strong>
-                    <span class="icono-editar">
-                        &#9998;
-                    </span>
                 </div>
 
                 <p th:text="${usuario.telefono != null
@@ -114,6 +95,17 @@
                 </p>
 
             </div>
+
+        </div>
+
+        <!-- BOTÓN EDITAR MI INFORMACIÓN (todos los roles) -->
+        <div class="acciones-formulario"
+             style="justify-content: center; margin-bottom: 20px;">
+
+            <a th:href="@{/perfil/modificar}"
+               class="boton boton-azul">
+                Editar mi información
+            </a>
 
         </div>
 
