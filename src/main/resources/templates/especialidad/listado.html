@@ -8,60 +8,48 @@
     <body>
 
         <header th:replace="~{general/fragmentos :: header}"></header>
+
         <main class="contenido-pagina">
-        <!-- ======================================= -->
-        <!-- VISTA PARA ADMINISTRADOR -->
-        <!-- ======================================= -->
 
-        <div sec:authorize="hasRole('ADMIN')">
+            <!-- NOTIFICACIONES -->
+            <section th:replace="~{general/fragmentos :: mostrarToast}"></section>
 
-            <!-- LISTADO DE ESPECIALIDADES -->
-            <th:block th:if="${medicos == null}">
-                <section th:replace="~{especialidad/fragmentos :: listado}">
-                </section>
-            </th:block>
+            <!-- ======================================= -->
+            <!-- VISTA PARA ADMINISTRADOR -->
+            <!-- ======================================= -->
 
-            <!-- MÉDICOS DE LA ESPECIALIDAD -->
-            <th:block th:if="${medicos != null}">
-                <section th:replace="~{especialidad/fragmentos :: medicos}">
-                </section>
-            </th:block>
+            <div sec:authorize="hasRole('ADMIN')">
 
-        </div>
+                <th:block th:if="${medicos == null}">
+                    <section th:replace="~{especialidad/fragmentos :: listado}"></section>
+                </th:block>
 
-        <!-- ======================================= -->
-        <!-- VISTA PARA PACIENTE -->
-        <!-- ======================================= -->
+                <th:block th:if="${medicos != null}">
+                    <section th:replace="~{especialidad/fragmentos :: medicos}"></section>
+                </th:block>
 
-        <div sec:authorize="hasRole('PACIENTE')">
+            </div>
 
-            <!-- ESPECIALIDADES DISPONIBLES -->
-            <th:block th:if="${medicos == null}">
-                <section th:replace="~{especialidad/fragmentos :: servicios}">
-                </section>
-            </th:block>
+            <!-- ======================================= -->
+            <!-- VISTA PARA PACIENTE Y DOCTOR -->
+            <!-- ======================================= -->
 
-            <!-- MÉDICOS DE LA ESPECIALIDAD -->
-            <th:block th:if="${medicos != null}">
-                <section th:replace="~{especialidad/fragmentos :: medicos}">
-                </section>
-            </th:block>
+            <div sec:authorize="hasAnyRole('PACIENTE','DOCTOR')">
 
-        </div>
+                <th:block th:if="${medicos == null}">
+                    <section th:replace="~{especialidad/fragmentos :: servicios}"></section>
+                </th:block>
+
+                <th:block th:if="${medicos != null}">
+                    <section th:replace="~{especialidad/fragmentos :: medicos}"></section>
+                </th:block>
+
+            </div>
+
         </main>
-        <!-- ======================================= -->
-        <!-- NOTIFICACIONES -->
-        <!-- ======================================= -->
 
-        <section th:replace="~{general/fragmentos :: mostrarToast}">
-        </section>
-
-        <!-- ======================================= -->
         <!-- PIE DE PÁGINA -->
-        <!-- ======================================= -->
-
-        <footer th:replace="~{general/fragmentos :: footer}">
-        </footer>
+        <footer th:replace="~{general/fragmentos :: footer}"></footer>
 
     </body>
 </html>

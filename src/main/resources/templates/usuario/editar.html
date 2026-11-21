@@ -1,131 +1,110 @@
 <!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
--->
-<html  lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{general/fragmentos :: head}">
-         
-    </head>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{general/fragmentos :: head}"></head>
+
     <body>
-          <header th:replace="~{general/fragmentos :: header}"></header>
+        <header th:replace="~{general/fragmentos :: header}"></header>
 
-    <main class="contenido">
+        <main class="contenido">
 
-        <section class="informacion-personal">
+            <section class="informacion-personal">
 
-            <h1 class="titulo-perfil">Editar usuario</h1>
+                <h1 class="titulo-perfil">Editar usuario</h1>
+                <hr class="linea-perfil">
 
-            <hr class="linea-perfil">
+                <p>Modifique la información personal del usuario.</p>
 
-            <p>Modifique la información personal del usuario.</p>
-
-            <div th:if="${error != null}"
-                 class="mensaje-error"
-                 th:text="${error}">
-            </div>
-
-            <form th:action="@{/admin/usuarios/{id}/editar(id=${usuario.idUsuario})}"
-                  th:object="${usuario}"
-                  method="post">
-
-                <div class="contenedor-datos">
-
-                    <div class="tarjeta-dato form-field">
-                        <label class="form-label">Nombre</label>
-                        <input type="text"
-                               th:field="*{nombre}"
-                               maxlength="60"
-                               required class="form-control">
-                    </div>
-
-                    <div class="tarjeta-dato form-field">
-                        <label class="form-label">Apellidos</label>
-                        <input type="text"
-                               th:field="*{apellidos}"
-                               maxlength="100"
-                               required class="form-control">
-                    </div>
-
-                    <div class="tarjeta-dato form-field">
-                        <label class="form-label">Cédula</label>
-                        <input type="text"
-                               th:field="*{cedula}"
-                               readonly class="form-control">
-                    </div>
-
-                    <div class="tarjeta-dato form-field">
-                        <label class="form-label">Nombre de usuario</label>
-                        <input type="text"
-                               th:field="*{username}"
-                               readonly class="form-control">
-                    </div>
-
-                    <div class="tarjeta-dato form-field">
-                        <label class="form-label">Correo electrónico</label>
-                        <input type="email"
-                               th:field="*{correo}"
-                               maxlength="150"
-                               required class="form-control">
-                    </div>
-
-                    <div class="tarjeta-dato form-field">
-                        <label class="form-label">Teléfono</label>
-                        <input type="text"
-                               th:field="*{telefono}"
-                               maxlength="25" class="form-control">
-                    </div>
-
-                    <div class="tarjeta-dato form-field">
-                        <label class="form-label">Rol</label>
-                        <input type="text"
-                               th:field="*{rol}"
-                               readonly class="form-control">
-                        
-                    </div>
-                    
-                   <div class="tarjeta-dato form-field"
-                         th:if="${usuario.rol == 'DOCTOR'}">
-
-                        <label class="form-label">Especialidad</label>
-
-                        <select name="idEspecialidad"
-                                class="form-control"
-                                required>
-
-                            <option value="">Seleccione una especialidad</option>
-
-                            <option th:each="especialidad : ${especialidades}"
-                                    th:value="${especialidad.idEspecialidad}"
-                                    th:text="${especialidad.nombre}"
-                                    th:selected="${especialidad.idEspecialidad == idEspecialidad}">
-                            </option>
-
-                        </select>
-                    </div>
-
+                <div th:if="${error != null}"
+                     class="mensaje-error"
+                     th:text="${error}">
                 </div>
 
-                <div class="contenedor-modificar">
+                <form th:action="@{/admin/usuarios/{id}/editar(id=${usuario.idUsuario})}"
+                      th:object="${usuario}"
+                      method="post">
 
-                    <button class="btn-solid btn-styled theme-primary" type="submit">
-                        Guardar cambios
-                    </button>
+                    <div class="contenedor-datos">
 
-                    <a th:href="@{/admin/usuarios}"
-                       class="boton-editar">
-                        Cancelar
-                    </a>
+                        <div class="tarjeta-dato form-field">
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="text" th:field="*{nombre}"
+                                   maxlength="60" required class="form-control">
+                        </div>
 
-                </div>
+                        <div class="tarjeta-dato form-field">
+                            <label for="apellidos" class="form-label">Apellidos</label>
+                            <input type="text" th:field="*{apellidos}"
+                                   maxlength="100" required class="form-control">
+                        </div>
 
-            </form>
+                        <div class="tarjeta-dato form-field">
+                            <label for="cedula" class="form-label">Cédula</label>
+                            <input type="text" th:field="*{cedula}"
+                                   readonly class="form-control">
+                        </div>
 
-        </section>
+                        <div class="tarjeta-dato form-field">
+                            <label for="username" class="form-label">Nombre de usuario</label>
+                            <input type="text" th:field="*{username}"
+                                   readonly class="form-control">
+                        </div>
 
-    </main>
+                        <div class="tarjeta-dato form-field">
+                            <label for="correo" class="form-label">Correo electrónico</label>
+                            <input type="email" th:field="*{correo}"
+                                   maxlength="150" required class="form-control">
+                        </div>
 
-    <footer th:replace="~{general/fragmentos :: footer}"></footer>
-    
+                        <div class="tarjeta-dato form-field">
+                            <label for="telefono" class="form-label">Teléfono</label>
+                            <input type="text" th:field="*{telefono}"
+                                   maxlength="25" class="form-control">
+                        </div>
+
+                        <div class="tarjeta-dato form-field">
+                            <label for="rol" class="form-label">Rol</label>
+                            <input type="text" th:field="*{rol}"
+                                   readonly class="form-control">
+                        </div>
+
+                        <div class="tarjeta-dato form-field"
+                             th:if="${usuario.rol == 'DOCTOR'}">
+
+                            <label for="idEspecialidad" class="form-label">Especialidad</label>
+
+                            <select id="idEspecialidad" name="idEspecialidad"
+                                    class="form-control" required>
+
+                                <option value="">Seleccione una especialidad</option>
+
+                                <option th:each="especialidad : ${especialidades}"
+                                        th:value="${especialidad.idEspecialidad}"
+                                        th:text="${especialidad.nombre}"
+                                        th:selected="${especialidad.idEspecialidad == idEspecialidad}">
+                                </option>
+
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="acciones-formulario">
+                        <button type="submit" class="boton boton-azul">
+                            Guardar cambios
+                        </button>
+
+                        <a th:href="@{/admin/usuarios}" class="boton boton-gris">
+                            Cancelar
+                        </a>
+                    </div>
+
+                </form>
+
+            </section>
+
+        </main>
+
+        <footer th:replace="~{general/fragmentos :: footer}"></footer>
+
     </body>
 </html>

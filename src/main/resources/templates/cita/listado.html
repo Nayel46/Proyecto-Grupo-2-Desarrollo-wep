@@ -1,24 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis citas - HealthNow</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet">
-</head>
-<body class="bg-light">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="es">
 
-    <nav class="navbar navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand fw-bold" th:href="@{/}">
-                HealthNow
-            </a>
-            <span class="navbar-text text-white">
-                Gestión de citas médicas
-            </span>
-        </div>
-    </nav>
+<head th:replace="~{general/fragmentos :: head}"></head>
+
+<body>
+
+    <!-- HEADER GENERAL (dos franjas, igual que el Panel Médico) -->
+    <header th:replace="~{general/fragmentos :: header}"></header>
 
     <main class="container py-5">
 
@@ -35,14 +25,13 @@
                 </p>
             </div>
 
-            <div th:if="${rolActual == 'PACIENTE'}"
-                 th:replace="~{cita/fragmentos :: botonAgendar}">
-            </div>
+            <th:block th:if="${rolActual == 'PACIENTE'}">
+                <div th:replace="~{cita/fragmentos :: botonAgendar}"></div>
+            </th:block>
 
         </div>
 
-        <div th:replace="~{cita/fragmentos :: mensajes}">
-        </div>
+        <div th:replace="~{cita/fragmentos :: mensajes}"></div>
 
         <div class="card shadow-sm border-0">
             <div class="card-body">
@@ -58,26 +47,27 @@
 
                     <a th:if="${rolActual == 'PACIENTE'}"
                        th:href="@{/cita/agendar}"
-                       class="btn btn-outline-primary">
+                       class="btn btn-primary">
                         Agendar mi primera cita
                     </a>
 
                 </div>
 
-                <div th:unless="${#lists.isEmpty(citas)}"
-                     th:replace="~{cita/fragmentos :: tablaCitas}">
-                </div>
+                <div th:replace="~{cita/fragmentos :: tablaCitas}"></div>
 
             </div>
         </div>
 
         <div class="mt-4">
-            <a th:href="@{/}" class="btn btn-outline-secondary">
+            <a th:href="@{/}" class="boton boton-gris">
                 Volver al inicio
             </a>
         </div>
 
     </main>
+
+    <!-- FOOTER GENERAL -->
+    <footer th:replace="~{general/fragmentos :: footer}"></footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
     </script>

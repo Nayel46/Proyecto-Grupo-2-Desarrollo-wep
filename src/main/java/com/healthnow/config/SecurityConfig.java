@@ -1,4 +1,3 @@
-
 package com.healthnow.config;
 
 import com.healthnow.service.UsuarioDetailsService;
@@ -64,6 +63,10 @@ public class SecurityConfig {
                 .requestMatchers("/paciente/**")
                 .hasRole("PACIENTE")
 
+                // Perfil propio: cualquier rol con sesión iniciada
+                .requestMatchers("/perfil/**")
+                .hasAnyRole("ADMIN", "DOCTOR", "PACIENTE")
+
                 .requestMatchers("/especialidad/**")
                 .hasAnyRole("ADMIN", "DOCTOR", "PACIENTE")
 
@@ -74,9 +77,6 @@ public class SecurityConfig {
                     "/cita/actualizar/**",
                     "/cita/cancelar/**"
                 ).hasRole("PACIENTE")
-
-                .requestMatchers("/cita/listado")
-                .hasAnyRole("PACIENTE", "DOCTOR")
 
                 .requestMatchers("/cita/**")
                 .hasAnyRole("PACIENTE", "DOCTOR")
@@ -108,4 +108,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-

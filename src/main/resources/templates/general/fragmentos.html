@@ -18,14 +18,19 @@
         <style>
 
             :root {
-                --azul: #1766a4;
-                --azul-oscuro: #124c7b;
+                --azul: #0089be;           /* botones */
+                --azul-oscuro: #17415b;    /* títulos y textos fuertes */
+                --barra-superior: #0076a8; /* franja de usuario */
+                --header: #34a5d2;         /* barra de navegación */
+                --pie: #087eae;            /* footer */
+                --azul-suave: #eaf7fc;     /* encabezados de tabla, etiquetas */
                 --verde: #25a56a;
-                --fondo: #f5f8fc;
-                --texto: #24364b;
-                --borde: #dce6f0;
+                --fondo: #f5f9fc;
+                --texto: #17415b;
+                --gris: #5b7384;
+                --borde: #e3edf3;
+                --sombra: 0 8px 28px rgba(23, 65, 91, 0.08);
             }
-
             * {
                 box-sizing: border-box;
             }
@@ -42,14 +47,40 @@
                 color: var(--texto);
                 display: grid;
                 grid-template-rows: auto 1fr auto;
-                
+
             }
 
             /* ENCABEZADO GENERAL */
 
             .encabezado {
-                background: var(--azul);
-                padding: 20px 6%;
+                background: var(--header);
+                padding: 18px 6%;
+            }
+
+            .barra-superior {
+                background: var(--barra-superior);
+                padding: 8px 6%;
+            }
+            .barra-superior-contenido {
+                max-width: 1200px;
+                margin: auto;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                gap: 12px;
+            }
+            .boton-salir {
+                background: transparent;
+                color: white;
+                border: 1px solid white;
+                border-radius: 999px;
+                padding: 6px 18px;
+                font-size: 13px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+            .boton-salir:hover {
+                background: rgba(255,255,255,.15);
             }
 
             .encabezado-contenido {
@@ -201,13 +232,15 @@
                 margin: 0;
                 padding: 25px 20px;
                 text-align: center;
-                background: var(--azul-oscuro);
+                background: var(--pie);
                 color: white;
                 font-size: 13px;
             }
             .pie-pagina p{
                 margin: 0;
             }
+
+
 
             /* RESPONSIVE */
 
@@ -226,13 +259,89 @@
                 .tarjeta {
                     padding: 22px;
                 }
-                
+
                 .contenido-pagina{
                     flex: 1;
                     width: 100%;
                 }
 
             }
+
+            /* Bootstrap (pantallas de citas) */
+            .btn-primary {
+                --bs-btn-bg: #0089be;
+                --bs-btn-border-color: #0089be;
+                --bs-btn-hover-bg: #0076a8;
+                --bs-btn-hover-border-color: #0076a8;
+                --bs-btn-active-bg: #0076a8;
+                --bs-btn-active-border-color: #0076a8;
+            }
+            .btn-outline-primary {
+                --bs-btn-color: #0089be;
+                --bs-btn-border-color: #0089be;
+                --bs-btn-hover-bg: #0089be;
+                --bs-btn-hover-border-color: #0089be;
+            }
+            .table-light {
+                --bs-table-bg: #eaf7fc;
+                --bs-table-color: #17415b;
+            }
+
+            /* FORMULARIOS */
+            .contenido form label {
+                display: block;
+                margin: 18px 0 6px;
+                font-size: 14px;
+                font-weight: 600;
+                color: var(--texto);
+            }
+            .contenido form input[type="text"],
+            .contenido form input[type="email"],
+            .contenido form input[type="password"],
+            .contenido form input[type="tel"],
+            .contenido form input[type="number"],
+            .contenido form select,
+            .contenido form textarea {
+                width: 100%;
+                padding: 12px 14px;
+                border: 1px solid var(--borde);
+                border-radius: 9px;
+                font-size: 14px;
+                color: var(--texto);
+                background: #fff;
+                outline: none;
+                transition: border-color .2s, box-shadow .2s;
+            }
+            .contenido form input:focus,
+            .contenido form select:focus,
+            .contenido form textarea:focus {
+                border-color: var(--azul);
+                box-shadow: 0 0 0 3px rgba(0, 137, 190, 0.15);
+            }
+
+            /* BOTONES DE FORMULARIO */
+            .acciones-formulario {
+                display: flex;
+                gap: 12px;
+                margin-top: 28px;
+                flex-wrap: wrap;
+            }
+            .boton {
+                transition: background .2s, transform .2s;
+            }
+            .boton:hover {
+                transform: translateY(-2px);
+            }
+            .boton-azul:hover  {
+                background: #0076a8;
+            }
+            .boton-verde:hover {
+                background: #1e8e5a;
+            }
+            .boton-gris:hover  {
+                background: #dfe7ee;
+            }
+
 
         </style>
 
